@@ -1,4 +1,4 @@
-package com.lendsqrfpnews
+package dev.heryordejy.lendsqrfpnews
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

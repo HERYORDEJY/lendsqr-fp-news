@@ -1,4 +1,4 @@
-package com.lendsqrfpnews
+package dev.heryordejy.lendsqrfpnews
 
 import android.app.Application
 import com.facebook.react.PackageList
@@ -11,6 +11,8 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.soloader.SoLoader
 
+import com.microsoft.codepush.react.CodePush
+
 class MainApplication : Application(), ReactApplication {
 
   override val reactNativeHost: ReactNativeHost =
@@ -22,6 +24,14 @@ class MainApplication : Application(), ReactApplication {
             }
 
         override fun getJSMainModuleName(): String = "index"
+
+
+        // 2. Override the getJSBundleFile method in order to let
+        // the CodePush runtime determine where to get the JS
+        // bundle location from on each app start
+        override fun getJSBundleFile(): String {
+            return CodePush.getJSBundleFile() 
+        }
 
         override fun getUseDeveloperSupport(): Boolean = BuildConfig.DEBUG
 
