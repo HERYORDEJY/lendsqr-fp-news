@@ -2,6 +2,8 @@
 
 #import <Firebase.h>
 
+#import <CodePush/CodePush.h>
+
 #import <React/RCTBundleURLProvider.h>
 
 @implementation AppDelegate
@@ -28,7 +30,9 @@
 #if DEBUG
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
 #else
-  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+// as instructed by Codepush
+  // return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+  return [CodePush bundleURL];
 #endif
 }
 
