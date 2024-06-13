@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "819087675772",
+    "project_id": "lendsqr-fp-news-heryordejy",
+    "storage_bucket": "lendsqr-fp-news-heryordejy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819087675772:android:5a8c397b71f8fd463714f9",
+        "android_client_info": {
+          "package_name": "dev.heryordejy.lendsqrfpnews"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCI4SeODA-MYN35Y93K16XJF36lS-3dIrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
