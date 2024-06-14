@@ -8,8 +8,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { useThemeStore } from '~/hooks/useThemeColors';
-import { lightThemeColors } from '~/styles/colors';
+import { useThemeColors } from '~/hooks/useThemeColors';
 import { appFontFamily } from '~/styles/fonts';
 import CustomActivityIndicator from '../general/CustomActivityIndicator';
 
@@ -27,7 +26,9 @@ interface Props extends TouchableOpacityProps {
 const TertiaryButton = memo((props: Props) => {
   const isLoading = props.isLoading || props.animating;
   const isDisabled = props.disabled || isLoading;
-  const themeStore = useThemeStore();
+  const { button, colors, button_disabled } = useThemeColors();
+
+  const buttonColor = isDisabled ? button_disabled : button;
 
   return (
     <TouchableOpacity
@@ -39,7 +40,7 @@ const TertiaryButton = memo((props: Props) => {
       {isLoading ? (
         <CustomActivityIndicator
           isLoading={isLoading}
-          color={themeStore.colors.grey600}
+          color={colors.grey600}
           size="small"
         />
       ) : props.children ? (
@@ -47,7 +48,15 @@ const TertiaryButton = memo((props: Props) => {
       ) : (
         <>
           {props?.leftIcon && <View>{props?.leftIcon}</View>}
-          <Text style={[styles.title, props.titleStyle]}>{props.title}</Text>
+          <Text
+            style={[
+              styles.title,
+              { color: buttonColor.primary.background },
+              props.titleStyle,
+            ]}
+          >
+            {props.title}
+          </Text>
         </>
       )}
     </TouchableOpacity>
@@ -71,6 +80,5 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: appFontFamily.semiBold,
     fontSize: 16,
-    color: lightThemeColors.primary,
   },
 });

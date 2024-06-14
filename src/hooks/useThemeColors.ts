@@ -1,10 +1,12 @@
-import {useAppSelector} from '~/store';
+import { useAppSelector } from '~/store';
 
 export function useThemeColors() {
   const themeSelector = useAppSelector(state => state.theme);
 
   return {
     mode: themeSelector.mode,
+
+    colors: themeSelector.colors,
     text: themeSelector.colors.text,
     list: themeSelector.colors.list,
     input: themeSelector.colors.input,

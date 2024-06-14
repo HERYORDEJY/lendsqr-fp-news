@@ -21,20 +21,20 @@ import { useThemeColors } from '~/hooks/useThemeColors';
 import { useToastMessage } from '~/hooks/useToastMessage';
 import { AuthenticationStackParamList } from '~/navigations/types';
 import { useAppDispatch } from '~/store';
-import { appThemeColors } from '~/styles/colors';
 import { appFontFamily } from '~/styles/fonts';
 import { isAndroidDevice } from '~/utils/device';
-import { logInEmailSchema } from '~/utils/yup-schema';
+import { logInSchema } from '~/utils/yup-schema';
 
 export default function Login() {
   const [isLoginIn, setIsLoginIn] = useState(false);
   const appDispatch = useAppDispatch();
+  const { button } = useThemeColors();
   const toastMessage = useToastMessage();
   const { text } = useThemeColors();
   const formMethods = useForm({
       resolver: yupResolver(
         // @ts-ignore
-        logInEmailSchema,
+        logInSchema,
       ),
       // defaultValues: {
       //   email: "",
@@ -167,7 +167,7 @@ export default function Login() {
             style={[
               styles.dontText,
               {
-                color: appThemeColors.LIGHT.colorFromLogo.red,
+                color: button.primary.background,
                 fontFamily: appFontFamily.medium,
               },
             ]}

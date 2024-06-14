@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from 'react';
 import {
   NativeSyntheticEvent,
   StyleSheet,
@@ -8,16 +8,14 @@ import {
   TextInputProps,
   View,
   ViewStyle,
-} from "react-native";
-import { moderateScale, verticalScale } from "react-native-size-matters";
-import { useAppSelector } from "~/redux/store";
-import { lightThemeColors } from "~/styles/colors";
+} from 'react-native';
+import { useAppSelector } from '~/store';
 
 interface Props extends TextInputProps {
   errorMessage?: string | undefined | null;
   infoText?: string | undefined | null;
   label: string;
-  inputStyles?: TextInputProps["style"];
+  inputStyles?: TextInputProps['style'];
   containerStyles?: ViewStyle;
   wrapperStyles?: ViewStyle;
   rightElement?: React.ReactNode;
@@ -25,7 +23,7 @@ interface Props extends TextInputProps {
 }
 
 export default function CustomTextInput(props: Props) {
-  const themeSelector = useAppSelector((state) => state.theme),
+  const themeSelector = useAppSelector(state => state.theme),
     inputThemeColors =
       props.editable !== false
         ? themeSelector.colors.input
@@ -35,7 +33,7 @@ export default function CustomTextInput(props: Props) {
   const isError = Boolean(props.errorMessage);
   const isInfoText = Boolean(props.infoText);
   //  const themeStore = useThemeStore();
-  const [value, setValue] = useState(props.value ?? "");
+  const [value, setValue] = useState(props.value ?? '');
   const isSuccess = Boolean(value) && !isError && !isFocused;
 
   const outlineStateColor = useMemo(() => {
@@ -93,8 +91,8 @@ export default function CustomTextInput(props: Props) {
 
         <TextInput
           autoCorrect={false}
-          autoCapitalize={"none"}
-          autoComplete={"off"}
+          autoCapitalize={'none'}
+          autoComplete={'off'}
           {...props}
           ref={inputRef}
           placeholder={props.placeholder}
@@ -143,35 +141,34 @@ const styles = StyleSheet.create({
     rowGap: 4,
   },
   wrapper: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "row",
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
     borderWidth: 1,
     height: 50,
     borderRadius: 12,
     // justifyContent: "center",
-    alignItems: "center",
+    alignItems: 'center',
     columnGap: 4,
     paddingHorizontal: 8,
   },
-  label: { fontSize: 16, paddingLeft: 12, fontFamily: "montserratMedium" },
+  label: { fontSize: 16, paddingLeft: 12, fontFamily: 'montserratMedium' },
   textinput: {
     flex: 1,
-    height: "100%",
-    backgroundColor: "transparent",
+    height: '100%',
+    backgroundColor: 'transparent',
   },
   leftElement: {},
   rightElement: {},
   errorMessage: {
-    fontSize: moderateScale(12),
-    lineHeight: moderateScale(20.3),
+    fontSize: 12,
+    lineHeight: 20.3,
   },
   infoText: {
-    fontSize: moderateScale(12),
-    lineHeight: moderateScale(20.3),
-    color: lightThemeColors.grey500,
+    fontSize: 12,
+    lineHeight: 20.3,
   },
   bottom: {
-    rowGap: verticalScale(4),
+    rowGap: 4,
   },
 });
