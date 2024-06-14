@@ -1,4 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -21,6 +23,7 @@ import { useThemeColors } from '~/hooks/useThemeColors';
 import { useToastMessage } from '~/hooks/useToastMessage';
 import { AuthenticationStackParamList } from '~/navigations/types';
 import { useAppDispatch } from '~/store';
+import { setAuthStoreStateAction } from '~/store/auth/authSlice';
 import { appFontFamily } from '~/styles/fonts';
 import { isAndroidDevice } from '~/utils/device';
 import { logInSchema } from '~/utils/yup-schema';
@@ -36,10 +39,6 @@ export default function Login() {
         // @ts-ignore
         logInSchema,
       ),
-      // defaultValues: {
-      //   email: "",
-      //   password: "",
-      // },
     }),
     formValues = formMethods.getValues(),
     formErrors = formMethods.formState.errors;
@@ -49,17 +48,27 @@ export default function Login() {
   async function onLogIn(values: typeof formValues) {
     setIsLoginIn(true);
     try {
+      const res = await auth().signInWithEmailAndPassword(
+        values.email,
+        values.password,
+      );
+
+      const bio = (
+        await firestore().collection('users').doc(res.user.uid).get()
+      ).data();
+
       appDispatch(
-        //@ts-ignore
-        authStoreActions.setState({
-          // session: data.session!,
-          // userRole: route.params.userRole!,
-          isInSession: true,
+        setAuthStoreStateAction({
+          user: res.user,
+          additionalUserInfo: res.additionalUserInfo,
+          bio: bio,
+          isLoggedIn: true,
         }),
       );
     } catch (error: any) {
+      console.log('\n\nerror.message', error.message);
       toastMessage.error({
-        message: error.message ?? JSON.stringify(error),
+        message: error.message,
       });
     } finally {
       setIsLoginIn(false);

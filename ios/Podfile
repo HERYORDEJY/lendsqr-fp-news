@@ -17,6 +17,8 @@ end
 target 'LendsqrFpNews' do
   config = use_native_modules!
 
+  pod 'nanopb', '< 2.30910.0'
+
   use_frameworks! :linkage => :static
   $RNFirebaseAsStaticFramework = true
   $RNFirebaseAnalyticsEnableAdSupport = true

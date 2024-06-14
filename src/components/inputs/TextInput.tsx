@@ -10,6 +10,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { useAppSelector } from '~/store';
+import { appFontFamily } from '~/styles/fonts';
 
 interface Props extends TextInputProps {
   errorMessage?: string | undefined | null;
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
     columnGap: 4,
     paddingHorizontal: 8,
   },
-  label: { fontSize: 16, paddingLeft: 12, fontFamily: 'montserratMedium' },
+  label: { fontSize: 16, paddingLeft: 12, fontFamily: appFontFamily.medium },
   textinput: {
     flex: 1,
     height: '100%',

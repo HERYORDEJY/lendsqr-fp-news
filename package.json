@@ -17,6 +17,7 @@
     "@react-native-firebase/app": "^20.1.0",
     "@react-native-firebase/auth": "^20.1.0",
     "@react-native-firebase/crashlytics": "^20.1.0",
+    "@react-native-firebase/firestore": "^20.1.0",
     "@react-native-firebase/messaging": "^20.1.0",
     "@react-native-firebase/perf": "^20.1.0",
     "@react-native-firebase/remote-config": "^20.1.0",

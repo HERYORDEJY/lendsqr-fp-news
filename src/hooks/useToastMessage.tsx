@@ -8,17 +8,17 @@ import {
   View,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
-import {ToastOptions} from 'react-native-toast-message/lib/src/types';
+import { ToastOptions } from 'react-native-toast-message/lib/src/types';
 import IconCheck from '~/components/svgs/CheckIcon';
 import IconClose from '~/components/svgs/CloseIcon';
 import IconError from '~/components/svgs/ErrorIcon';
-import {ToastMessageType, ToastType} from '~/contextAPI/toast-message/types';
-import {useAppSelector} from '~/store';
-import {appThemeColors} from '~/styles/colors';
+import { ToastMessageType, ToastType } from '~/contextAPI/toast-message/types';
+import { useAppSelector } from '~/store';
+import { appThemeColors } from '~/styles/colors';
 
 const appLightThemeColors = appThemeColors.LIGHT;
 
-function CustomToastMessageContainer({props}: ToastOptions) {
+function CustomToastMessageContainer({ props }: ToastOptions) {
   const windowDimension = useWindowDimensions();
   const themeSelector = useAppSelector(state => state.theme);
 
@@ -59,10 +59,11 @@ function CustomToastMessageContainer({props}: ToastOptions) {
       style={[
         styles.container,
         {
-          backgroundColor: themeSelector.colors.screenBackground,
+          backgroundColor: themeSelector.colors.main.background,
           width: windowDimension.width - 16 * 2, // screen width minus the margin
         },
-      ]}>
+      ]}
+    >
       <View
         style={[styles.indicator, getTypeStyleProperties(props.type).indicator]}
       />
@@ -72,25 +73,28 @@ function CustomToastMessageContainer({props}: ToastOptions) {
           {
             borderColor: themeSelector.colors.light,
           },
-        ]}>
+        ]}
+      >
         <View
           style={[
             styles.iconWrapper,
             getTypeStyleProperties(props.type).iconWrapper,
-            {backgroundColor: themeSelector.colors.white},
-          ]}>
+            { backgroundColor: themeSelector.colors.white },
+          ]}
+        >
           {props.icon}
         </View>
 
         <View style={[styles.messageWrapper]}>
-          <Text style={{lineHeight: 20.3, fontFamily: 'montserratSemibold'}}>
+          <Text style={{ lineHeight: 20.3, fontFamily: 'montserratSemibold' }}>
             {props.title}
           </Text>
           <Text
             style={{
               lineHeight: 20,
               color: themeSelector.colors.textSecondary,
-            }}>
+            }}
+          >
             {props.message}
           </Text>
         </View>
@@ -99,8 +103,9 @@ function CustomToastMessageContainer({props}: ToastOptions) {
           onPress={() => Toast.hide()}
           style={[
             styles.closeButton,
-            {borderColor: appLightThemeColors.grey25},
-          ]}>
+            { borderColor: appLightThemeColors.grey25 },
+          ]}
+        >
           <IconClose color={themeSelector.colors.textPrimary} />
         </Pressable>
       </View>
@@ -115,7 +120,7 @@ export const toastMessageConfig = {
 };
 
 export function useToastMessage() {
-  const success = ({title = 'Success', message = '', icon = <IconCheck />}) =>
+  const success = ({ title = 'Success', message = '', icon = <IconCheck /> }) =>
     Toast.show({
       type: 'custom',
       props: {
@@ -125,7 +130,7 @@ export function useToastMessage() {
         type: 'success',
       },
     });
-  const error = ({title = 'Oops!', message = '', icon = <IconError />}) =>
+  const error = ({ title = 'Oops!', message = '', icon = <IconError /> }) =>
     Toast.show({
       type: 'custom',
       props: {
@@ -136,7 +141,7 @@ export function useToastMessage() {
       },
     });
 
-  const warning = ({title = 'Oops!', message = '', icon = <IconError />}) =>
+  const warning = ({ title = 'Oops!', message = '', icon = <IconError /> }) =>
     Toast.show({
       type: 'custom',
       props: {
@@ -147,7 +152,7 @@ export function useToastMessage() {
       },
     });
 
-  const info = ({title = 'Oops!', message = '', icon = <IconError />}) =>
+  const info = ({ title = 'Oops!', message = '', icon = <IconError /> }) =>
     Toast.show({
       type: 'custom',
       props: {
@@ -160,7 +165,7 @@ export function useToastMessage() {
 
   const hide = () => Toast.hide();
 
-  return {success, error, hide, warning, info};
+  return { success, error, hide, warning, info };
 }
 
 const styles = StyleSheet.create({

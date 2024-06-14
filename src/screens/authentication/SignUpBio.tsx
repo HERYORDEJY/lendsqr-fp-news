@@ -1,10 +1,14 @@
+import { yupResolver } from '@hookform/resolvers/yup';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import {
   NavigationProp,
   RouteProp,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -14,9 +18,6 @@ import {
   Text,
   View,
 } from 'react-native';
-
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Controller, useForm } from 'react-hook-form';
 import AuthScreenHeader from '~/components/authententication/AuthScreenHeader';
 import PrimaryButton from '~/components/buttons/PrimaryButtom';
 import CustomScreenContainer from '~/components/general/CustomScreenContainer';
@@ -28,6 +29,7 @@ import { useThemeColors } from '~/hooks/useThemeColors';
 import { useToastMessage } from '~/hooks/useToastMessage';
 import { AuthenticationStackParamList } from '~/navigations/types';
 import { useAppDispatch } from '~/store';
+import { setAuthStoreStateAction } from '~/store/auth/authSlice';
 import { appFontFamily } from '~/styles/fonts';
 import { isAndroidDevice } from '~/utils/device';
 import { signUpSchema } from '~/utils/yup-schema';
@@ -60,7 +62,41 @@ export default function SignUp() {
   async function signUpWithEmail(values: typeof formValues) {
     setLoading(true);
     try {
-      //
+      // Create user with email and password
+      const userCredential = await auth().createUserWithEmailAndPassword(
+        values.email,
+        values.password!,
+      );
+      const user = userCredential.user;
+
+      // Update user profile with additional info
+      await userCredential.user.updateProfile({
+        displayName: values.fullName,
+      });
+
+      await firestore()
+        .collection('users')
+        .doc(user.uid)
+        .set({
+          fullName: values.fullName,
+          phoneNumber: values.phoneNumber,
+          emailAddress: values.email,
+        })
+        .then(console.log);
+
+      appDispatch(
+        setAuthStoreStateAction({
+          user,
+          bio: {
+            fullName: values.fullName,
+            phoneNumber: values.phoneNumber,
+            emailAddress: values.email,
+          },
+          isLoggedIn: true,
+        }),
+      );
+
+      toastMessage.success({ message: 'Account created successfully' });
 
       setLoading(false);
     } catch (error: any) {
@@ -71,7 +107,25 @@ export default function SignUp() {
     }
   }
 
-  console.log('formErrors', formErrors);
+  useEffect(() => {
+    async function getSome() {
+      const users = await firestore().collection('Users').get();
+
+      await firestore()
+        .collection('users')
+        .add({
+          name: 'Ada Lovelace',
+          age: 30,
+        })
+        .then(() => {
+          console.log('\n\nUser added!');
+        });
+
+      console.log('\n+\nusers', users);
+    }
+
+    getSome();
+  }, []);
 
   return (
     <KeyboardAvoidingView
@@ -115,6 +169,23 @@ export default function SignUp() {
                   );
                 }}
                 name={'email'}
+                control={formMethods.control}
+              />
+              {/* TODO: crate a phone number input */}
+              <Controller
+                render={({ field }) => {
+                  return (
+                    <CustomTextInput
+                      label="Phone Number"
+                      onChangeText={field.onChange}
+                      errorMessage={formErrors.phoneNumber?.message}
+                      value={field.value}
+                      placeholder="Enter your phone number"
+                      leftElement={<UserIcon color={input.iconColor} />}
+                    />
+                  );
+                }}
+                name={'phoneNumber'}
                 control={formMethods.control}
               />
 
@@ -219,3 +290,35 @@ const styles = StyleSheet.create({
   },
   dontText: { fontSize: 16 },
 });
+
+const _ = {
+  additionalUserInfo: {
+    profile: null,
+    username: null,
+    providerId: 'password',
+    isNewUser: false,
+  },
+  user: {
+    displayName: 'Ayodeji Yusuf',
+    multiFactor: { enrolledFactors: [] },
+    isAnonymous: false,
+    emailVerified: false,
+    providerData: [
+      {
+        email: 'heryordejy.dev@gmail.com',
+        providerId: 'password',
+        uid: 'heryordejy.dev@gmail.com',
+        displayName: 'Ayodeji Yusuf',
+      },
+    ],
+    uid: '11OLdWdzHjRId7a3iFw3IQmFAuQ2',
+    email: 'heryordejy.dev@gmail.com',
+    refreshToken:
+      'AMf-vBzgd4DyNMoCDF5u6gbZu6KKsLY_ctSKR-Z7_6q2uG8RtHstfo2Aihvyt9MURJHvwpEVPxuRXfKQMbr45eNSK6RGMIFV60bh_Y39Ztclt2D_f0_-LNtPtcgW38WwOCIrQnRUSKhkQZsesCxe3uvZA1tNg86i-erglokc2otkXCGWlPgNBohlMvdWPhQmTyIseRU_xjKjczUn2VZx_cInXAoVrHzHJH0zo_emyg4WTJE-mpwqiH-RyO1O485X-0JCC3HUVbTdov1DlsEyMDJipEtyS3MEDQ',
+    tenantId: null,
+    phoneNumber: null,
+    photoURL: null,
+    metadata: { creationTime: 1718353788529, lastSignInTime: 1718353788529 },
+    providerId: 'firebase',
+  },
+};
