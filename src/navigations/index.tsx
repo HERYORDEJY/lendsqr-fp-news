@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from '~/store';
 import { appFontFamily } from '~/styles/fonts';
 import { isAndroidDevice } from '~/utils/device';
 import AuthenticationStack from './AuthenticationStack';
+import NewsStack from './NewsStack';
 
 export default function RootNavigation() {
   const authSelector = useAppSelector(state => state.authentication);
@@ -64,7 +65,11 @@ export default function RootNavigation() {
         BootSplash.hide();
       }}
     >
-      <AuthenticationStack />
+      {authSelector.isLoggedIn && authSelector.user?.uid ? (
+        <NewsStack />
+      ) : (
+        <AuthenticationStack />
+      )}
     </NavigationContainer>
   );
 }

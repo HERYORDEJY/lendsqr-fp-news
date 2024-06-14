@@ -7,7 +7,7 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   KeyboardAvoidingView,
@@ -86,7 +86,19 @@ export default function SignUp() {
 
       appDispatch(
         setAuthStoreStateAction({
-          user,
+          user: {
+            displayName: user.displayName,
+            multiFactor: user.multiFactor!,
+            isAnonymous: user.isAnonymous,
+            emailVerified: user.emailVerified,
+            providerData: user.providerData,
+            uid: user.uid,
+            email: values.email,
+            phoneNumber: user.phoneNumber,
+            photoURL: user.photoURL,
+            metadata: user.metadata,
+            providerId: user.providerId,
+          },
           bio: {
             fullName: values.fullName,
             phoneNumber: values.phoneNumber,
@@ -106,26 +118,6 @@ export default function SignUp() {
       setLoading(false);
     }
   }
-
-  useEffect(() => {
-    async function getSome() {
-      const users = await firestore().collection('Users').get();
-
-      await firestore()
-        .collection('users')
-        .add({
-          name: 'Ada Lovelace',
-          age: 30,
-        })
-        .then(() => {
-          console.log('\n\nUser added!');
-        });
-
-      console.log('\n+\nusers', users);
-    }
-
-    getSome();
-  }, []);
 
   return (
     <KeyboardAvoidingView

@@ -52,21 +52,40 @@ export default function Login() {
         values.email,
         values.password,
       );
+      const user = res.user;
 
-      const bio = (
-        await firestore().collection('users').doc(res.user.uid).get()
-      ).data();
-
-      appDispatch(
-        setAuthStoreStateAction({
-          user: res.user,
-          additionalUserInfo: res.additionalUserInfo,
-          bio: bio,
-          isLoggedIn: true,
-        }),
-      );
+      await firestore()
+        .collection('users')
+        .doc(res.user.uid)
+        .get()
+        .then(documentSnapshot => {
+          if (documentSnapshot.exists) {
+            const bio = documentSnapshot.data();
+            // appDispatch(setAuthStoreBioAction(bio));
+            appDispatch(
+              setAuthStoreStateAction({
+                user: {
+                  displayName: user.displayName,
+                  multiFactor: user.multiFactor!,
+                  isAnonymous: user.isAnonymous,
+                  emailVerified: user.emailVerified,
+                  providerData: user.providerData,
+                  uid: user.uid,
+                  email: values.email,
+                  phoneNumber: user.phoneNumber,
+                  photoURL: user.photoURL,
+                  metadata: user.metadata,
+                  providerId: user.providerId,
+                },
+                additionalUserInfo: res.additionalUserInfo,
+                bio,
+                isLoggedIn: true,
+              }),
+            );
+          }
+        });
     } catch (error: any) {
-      console.log('\n\nerror.message', error.message);
+      console.log('\n\nerror.message', error);
       toastMessage.error({
         message: error.message,
       });
