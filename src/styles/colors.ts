@@ -41,6 +41,17 @@ const appLightThemeColors = {
   error400_base: '#D42620',
   error500: '#CB1A14',
 
+  tabBar: {
+    backgroundColor: '#F5F5F5',
+    activeIconColor: '#ff5533', // "#007AFF",
+    inactiveIconColor: '#A8A8A8',
+    activeLabelColor: '#ff5533', // "#007AFF",
+    inactiveLabelColor: '#A8A8A8',
+    badgeColor: '#FF3B30',
+    badgeValueColor: '#FFFFFF',
+    borderColor: '#CCCCCC',
+  },
+
   input: {
     textColor: '#000000',
     backgroundColor: '#FFFFFF',
@@ -139,7 +150,7 @@ const appLightThemeColors = {
     },
   },
   main: {
-    background: '#FFFFFF',
+    background: '#F2F2F2',
   },
   text: {
     primary: '#333333',
@@ -172,7 +183,7 @@ const appLightThemeColors = {
       },
       border: '#CCCCCC',
     },
-    title: {default: '#333333', selected: '#FFFFFF'},
+    title: { default: '#333333', selected: '#FFFFFF' },
   },
   tag_disabled: {
     container: {
@@ -182,7 +193,7 @@ const appLightThemeColors = {
       },
       border: '#CCCCCC',
     },
-    title: {default: '#999999', selected: '#FFFFFF'},
+    title: { default: '#999999', selected: '#FFFFFF' },
   },
   icon: {
     color: '#333333',
@@ -202,6 +213,19 @@ const appLightThemeColors = {
 
 const appDarkThemeColors = {
   ...appLightThemeColors,
+
+  tabBar: {
+    ...appLightThemeColors.tabBar,
+    backgroundColor: '#333333',
+    activeIconColor: '#ff5533', // "#007AFF",
+    inactiveIconColor: '#777', // "#A8A8A8",
+    activeLabelColor: '#ff5533', // "#007AFF",
+    inactiveLabelColor: '#777',
+    badgeColor: '#FF3B30',
+    badgeValueColor: '#FFFFFF',
+    borderColor: '#666666',
+  },
+
   input: {
     ...appLightThemeColors.input,
     textColor: '#FFFFFF',
@@ -340,7 +364,7 @@ const appDarkThemeColors = {
       },
       border: '#666666',
     },
-    title: {default: '#FFFFFF', selected: '#FFFFFF'},
+    title: { default: '#FFFFFF', selected: '#FFFFFF' },
   },
   tag_disabled: {
     container: {
@@ -350,7 +374,7 @@ const appDarkThemeColors = {
       },
       border: '#666666',
     },
-    title: {default: '#CCCCCC', selected: '#FFFFFF'},
+    title: { default: '#CCCCCC', selected: '#FFFFFF' },
   },
   icon: {
     color: '#FFFFFF',

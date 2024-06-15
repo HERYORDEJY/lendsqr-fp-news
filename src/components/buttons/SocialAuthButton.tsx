@@ -62,6 +62,7 @@ export default function SocialAuthButton(props: Props) {
   });
 
   const onContinueWithGoogle = async () => {
+    // TODO: implement login with google
     try {
       setIsContinuingGoogle(true);
       const res = await GoogleSignin.hasPlayServices({
@@ -108,6 +109,7 @@ export default function SocialAuthButton(props: Props) {
   };
 
   const onContinueWithApple = async () => {
+    // TODO: implement login with apple support
     setIsContinuingApple(true); //
     try {
       // performs login request

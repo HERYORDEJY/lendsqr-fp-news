@@ -6,6 +6,9 @@ declare module 'react-native-config' {
     LendsqrFpNews_IOS_GOOGLE_CLOUD_CLIENT_ID?: string;
     LendsqrFpNews_WEB_GOOGLE_CLOUD_CLIENT_ID?: string;
     LendsqrFpNews_WEB_GOOGLE_CLOUD_CLIENT_SECRET?: string;
+    RAPID_API_HOST?: string;
+    RAPID_API_HOSTNAME?: string;
+    NewsAPI_BASE_URL?: string;
     BASE_URL?: string;
   }
 

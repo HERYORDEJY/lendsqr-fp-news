@@ -1,7 +1,7 @@
-import React, {PropsWithChildren} from 'react';
-import {StatusBar, StyleSheet, ViewStyle} from 'react-native';
-import {Edges, SafeAreaView} from 'react-native-safe-area-context';
-import {useThemeColors, useThemeStore} from '~/hooks/useThemeColors';
+import React, { PropsWithChildren } from 'react';
+import { StatusBar, StyleSheet, ViewStyle } from 'react-native';
+import { Edges, SafeAreaView } from 'react-native-safe-area-context';
+import { useThemeColors, useThemeStore } from '~/hooks/useThemeColors';
 
 interface Props extends PropsWithChildren {
   style?: ViewStyle;
@@ -26,7 +26,7 @@ export default function CustomScreenContainer({
   edges = isBottomSafeArea
     ? [...edges, 'bottom']
     : edges.filter(edge => edge !== 'bottom');
-  const {main} = useThemeColors();
+  const { main } = useThemeColors();
   const themeStore = useThemeStore();
 
   return (
@@ -34,9 +34,10 @@ export default function CustomScreenContainer({
       style={[
         styles.container,
         props.style,
-        {backgroundColor: main?.background},
+        { backgroundColor: main?.background },
       ]}
-      edges={props.edges ?? edges}>
+      edges={props.edges ?? edges}
+    >
       <StatusBar
         barStyle={
           themeStore.mode === 'LIGHT' ? 'dark-content' : 'light-content'

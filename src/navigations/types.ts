@@ -2,7 +2,7 @@ type RootStackParamList = {
   SignUp: undefined;
   Login: undefined;
   NewsList: undefined;
-  NewsDetail: {news: any}; // Adjust type according to your news object structure
+  NewsDetail: { news: any }; // Adjust type according to your news object structure
 };
 
 export type AuthenticationStackParamList = {
@@ -13,5 +13,6 @@ export type AuthenticationStackParamList = {
 
 export type NewsStackParamList = {
   NewsListing: undefined;
-  NewsDetails: {news: any};
+  Profile: undefined;
+  NewsDetails: { news: any };
 };

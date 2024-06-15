@@ -5,23 +5,26 @@
  * @format
  */
 
-import type {PropsWithChildren} from 'react';
+import type { PropsWithChildren } from 'react';
 import React from 'react';
-import {StyleSheet, Text, useColorScheme, View} from 'react-native';
-import {Provider} from 'react-redux';
-import {PersistGate} from 'redux-persist/integration/react';
+import { StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-import RootNavigation from '~/navigations';
-import store, {persistor} from '~/store';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
-import {toastMessageConfig} from '~/hooks/useToastMessage';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { toastMessageConfig } from '~/hooks/useToastMessage';
+import RootNavigation from '~/navigations';
+import store, { persistor } from '~/store';
+
+const queryClient = new QueryClient();
 
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
 
-function Section({children, title}: SectionProps): React.JSX.Element {
+function Section({ children, title }: SectionProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -31,7 +34,8 @@ function Section({children, title}: SectionProps): React.JSX.Element {
           {
             color: isDarkMode ? Colors.white : Colors.black,
           },
-        ]}>
+        ]}
+      >
         {title}
       </Text>
       <Text
@@ -40,7 +44,8 @@ function Section({children, title}: SectionProps): React.JSX.Element {
           {
             color: isDarkMode ? Colors.light : Colors.dark,
           },
-        ]}>
+        ]}
+      >
         {children}
       </Text>
     </View>
@@ -57,7 +62,9 @@ function App(): React.JSX.Element {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <RootNavigation />
+        <QueryClientProvider client={queryClient}>
+          <RootNavigation />
+        </QueryClientProvider>
         {/* @ts-ignore */}
         <Toast config={toastMessageConfig} />
       </PersistGate>
