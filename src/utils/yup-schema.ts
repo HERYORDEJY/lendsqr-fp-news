@@ -1,5 +1,6 @@
 import * as yup from 'yup';
 
+const phoneNumberRegex = /^(\+?234|0)?[789]\d{9}$/; //^(\+?234|0)?[789]\d{9}$
 const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 const passwordValidityInfo =
   'Password should be a minimum of 8 characters, contains at least on capital letter, one small letter, one number, and one special character.';
@@ -29,7 +30,13 @@ export const logInSchema = yup.object().shape({
 
 export const signUpSchema = yup.object().shape({
   fullName: yup.string().trim().required('First name is required'),
-  phoneNumber: yup.string().trim().required('Last name is required'),
+  phoneNumber: yup
+    .string()
+    .trim()
+    .required('Phone number is required')
+    .test('password', 'Invalid phone number format', value => {
+      return phoneNumberRegex.test(value);
+    }),
   email: yup
     .string()
     .trim()

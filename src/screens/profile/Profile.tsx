@@ -15,7 +15,9 @@ export default function Profile() {
   const appDispatch = useAppDispatch();
   const { colors, text, mode } = useThemeColors();
 
-  const onSwitchTheme = () => appDispatch(switchThemeModeAction());
+  const onSwitchTheme = () => {
+    appDispatch(switchThemeModeAction());
+  };
 
   const onLogOut = () => appDispatch({ type: 'LOGOUT' });
 
@@ -26,11 +28,12 @@ export default function Profile() {
           <View
             style={[
               styles.profileImageButton,
-              { backgroundColor: colors.colorFromLogo.red },
+              { backgroundColor: colors.colorFromLogo.brown },
             ]}
           >
             <CustomFastImage
-              imageUri={`https://gravatar.com/avatar/${authenticationStore.user?.uid}?s=400&d=robohash&r=x`}
+              imageUri={authenticationStore.bio?.photoUrl}
+              style={{ aspectRatio: 1 }}
             />
           </View>
         </View>
@@ -67,7 +70,7 @@ export default function Profile() {
         >
           <TouchableOpacity style={styles.itemRow} onPress={onSwitchTheme}>
             <Text style={[{ color: text.secondary }]}>Dark Theme</Text>
-            <Switch value={mode === 'DARK'} pointerEvents="none" />
+            <Switch value={mode === 'DARK'} onValueChange={onSwitchTheme} />
           </TouchableOpacity>
         </CustomSectionWrapper>
 

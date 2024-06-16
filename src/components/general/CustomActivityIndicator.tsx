@@ -6,7 +6,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import {useAppSelector} from '~/store';
+import { useAppSelector } from '~/store';
 
 interface Props extends ActivityIndicatorProps {
   isLoading?: boolean;
@@ -23,7 +23,13 @@ export default function CustomActivityIndicator({
   return (
     <>
       {isLoading ? (
-        <View style={[styles.container, props.style]}>
+        <View
+          style={[
+            styles.container,
+            { backgroundColor: themeSelector.colors.main.background },
+            props.style,
+          ]}
+        >
           <ActivityIndicator
             size={size}
             color={props.color ?? themeSelector.colors.activityIndicator}
@@ -34,8 +40,9 @@ export default function CustomActivityIndicator({
                 <Text
                   style={[
                     styles.title,
-                    {color: themeSelector.colors.textPrimary},
-                  ]}>
+                    { color: themeSelector.colors.textPrimary },
+                  ]}
+                >
                   {props.title}
                 </Text>
               ) : null}
@@ -43,8 +50,9 @@ export default function CustomActivityIndicator({
                 <Text
                   style={[
                     styles.description,
-                    {color: themeSelector.colors.textSecondary},
-                  ]}>
+                    { color: themeSelector.colors.textSecondary },
+                  ]}
+                >
                   {props.description}
                 </Text>
               ) : null}
@@ -63,6 +71,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'transparent',
     padding: 10,
+    height: '100%',
+    width: '100%',
   },
   bodyWrapper: {
     rowGap: 8,

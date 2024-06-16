@@ -1,17 +1,24 @@
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
-import { useQuery } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
+import { useToastMessage } from '~/hooks/useToastMessage';
 import { newsApiRequest } from '~/services/news';
+import { useAppDispatch, useAppSelector } from '~/store';
+import { setTopHeadlineNewsAction } from '~/store/news/slice';
 import { NewsArticleDataType } from '~/store/news/types';
 import { isDataEmpty } from '~/utils/format';
-import CustomRefreshControl from '../general/CustomRefreshControl';
 import NewsTopHeadlineItem from './NewsTopHeadlineItem';
 
-export default function NewsTopHeadlinesList() {
-  const [articles, setArticles] = useState<Array<NewsArticleDataType> | null>(
-    null,
-  );
+interface Props {
+  initiateReload?: boolean;
+}
+
+export default function NewsTopHeadlinesList(props: Props) {
+  const newsStore = useAppSelector(state => state.news);
+  const appDispatch = useAppDispatch();
+  const [isLoadingNews, setIsLoadingNews] = useState(true);
+  const [isRefreshingNews, setIsRefreshingNews] = useState(false);
+  const toastMessage = useToastMessage();
 
   const keyExtractor = useCallback(
     (item: NewsArticleDataType, index: number) => {
@@ -20,18 +27,20 @@ export default function NewsTopHeadlinesList() {
     [],
   );
 
-  const getTopHeadlinesQuery = useQuery({
-      queryKey: ['news', 'top-headlines'],
-      queryFn: () => newsApiRequest.getTopHeadlines(),
-    }),
-    fallAssessmentsData = getTopHeadlinesQuery.data?.data;
+  const getTopHeadlineNews = async () => {
+    try {
+      const res = await newsApiRequest.getTopHeadlines();
+      return res.data;
+    } catch (error: any) {
+      toastMessage.error({ message: error.message });
+    }
+  };
 
   const onRefresh = () => {
     // Alert.alert('Refreshing assessment');
-    getTopHeadlinesQuery.refetch;
+    getTopHeadlineNews();
   };
 
-  //    TODO: get news item data type
   const renderListItem: ListRenderItem<NewsArticleDataType> = useCallback(
     ({ item, index }) => {
       // @ts-ignore
@@ -41,16 +50,15 @@ export default function NewsTopHeadlinesList() {
   );
 
   useEffect(() => {
-    if (getTopHeadlinesQuery.data?.data) {
-      setArticles(getTopHeadlinesQuery.data.data.articles);
-    }
-  }, [getTopHeadlinesQuery.data]);
+    getTopHeadlineNews().then(data => {
+      if (data.articles) {
+        appDispatch(setTopHeadlineNewsAction(data.articles));
+        setIsLoadingNews(false);
+      }
+    });
+  }, [props.initiateReload]);
 
-  //   if (getTopHeadlinesQuery.isLoading && isDataEmpty(articles)) {
-  //     return <CustomActivityIndicator />;
-  //   }
-
-  if (isDataEmpty(articles)) {
+  if (!isLoadingNews && isDataEmpty(newsStore.topHeadlines)) {
     return null;
   }
 
@@ -59,17 +67,11 @@ export default function NewsTopHeadlinesList() {
       <FlashList
         contentInsetAdjustmentBehavior="automatic"
         horizontal={true}
-        data={articles}
+        data={newsStore.topHeadlines}
         renderItem={renderListItem}
         keyExtractor={keyExtractor}
         contentContainerStyle={styles.contentContainer}
         estimatedItemSize={100}
-        refreshControl={
-          <CustomRefreshControl
-            refreshing={getTopHeadlinesQuery.isRefetching}
-            onRefresh={onRefresh}
-          />
-        }
       />
     </>
   );
@@ -77,7 +79,7 @@ export default function NewsTopHeadlinesList() {
 
 const styles = StyleSheet.create({
   contentContainer: {
-    paddingTop: 24,
+    // paddingTop: 24,
     paddingBottom: 24,
     backgroundColor: 'transparent',
     paddingHorizontal: 20,

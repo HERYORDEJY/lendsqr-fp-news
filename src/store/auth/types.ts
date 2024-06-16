@@ -9,6 +9,7 @@ export interface AuthStoreInitialStateType {
         emailAddress: string;
         phoneNumber: string;
         fullName: string;
+        photoUrl: string;
       }
     | FirebaseFirestoreTypes.DocumentData
     | null;

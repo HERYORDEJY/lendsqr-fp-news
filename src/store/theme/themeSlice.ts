@@ -1,7 +1,6 @@
-import {createSlice} from '@reduxjs/toolkit';
-import {appThemeColors} from '~/styles/colors';
-import {LOGOUT} from '../actions';
-import {ThemeStoreInitialStateType} from './types';
+import { createSlice } from '@reduxjs/toolkit';
+import { appThemeColors } from '~/styles/colors';
+import { ThemeStoreInitialStateType } from './types';
 
 const initialThemeState: ThemeStoreInitialStateType = {
   mode: 'LIGHT',
@@ -20,17 +19,16 @@ const themeSlice = createSlice({
   },
   extraReducers: builder => {
     //@ts-ignore
-    builder.addCase(
-      LOGOUT,
-      state =>
-        Object.assign(state, {
-          ...initialThemeState,
-          mode: 'LIGHT',
-        }),
-      // resetReduxStoreState({ initialState: initialThemeState, state })
-    );
+    // builder.addCase(
+    //   LOGOUT,
+    //   state =>
+    //     Object.assign(state, {
+    //       ...initialThemeState,
+    //       mode: 'LIGHT',
+    //     }),
+    // );
   },
 });
 
 export const themeStoreReducer = themeSlice.reducer;
-export const {switchThemeMode: switchThemeModeAction} = themeSlice.actions;
+export const { switchThemeMode: switchThemeModeAction } = themeSlice.actions;

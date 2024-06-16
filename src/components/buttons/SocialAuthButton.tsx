@@ -65,13 +65,13 @@ export default function SocialAuthButton(props: Props) {
     // TODO: implement login with google
     try {
       setIsContinuingGoogle(true);
-      const res = await GoogleSignin.hasPlayServices({
+      await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       });
 
       const { idToken } = await GoogleSignin.signIn();
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      await auth().signInWithCredential(googleCredential);
+      const res = await auth().signInWithCredential(googleCredential);
 
       if (idToken) {
         //

@@ -32,6 +32,7 @@ import { useAppDispatch } from '~/store';
 import { setAuthStoreStateAction } from '~/store/auth/authSlice';
 import { appFontFamily } from '~/styles/fonts';
 import { isAndroidDevice } from '~/utils/device';
+import { generateRandomHex } from '~/utils/generate';
 import { signUpSchema } from '~/utils/yup-schema';
 
 export default function SignUp() {
@@ -68,10 +69,12 @@ export default function SignUp() {
         values.password!,
       );
       const user = userCredential.user;
+      const photoUrl = `https://gravatar.com/avatar/${generateRandomHex()}?s=400&d=robohash&r=x`;
 
       // Update user profile with additional info
       await userCredential.user.updateProfile({
         displayName: values.fullName,
+        photoURL: photoUrl,
       });
 
       await firestore()
@@ -81,6 +84,7 @@ export default function SignUp() {
           fullName: values.fullName,
           phoneNumber: values.phoneNumber,
           emailAddress: values.email,
+          photoUrl,
         })
         .then(console.log);
 
@@ -103,6 +107,7 @@ export default function SignUp() {
             fullName: values.fullName,
             phoneNumber: values.phoneNumber,
             emailAddress: values.email,
+            photoUrl,
           },
           isLoggedIn: true,
         }),

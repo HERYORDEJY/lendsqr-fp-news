@@ -14,5 +14,6 @@ export type AuthenticationStackParamList = {
 export type NewsStackParamList = {
   NewsListing: undefined;
   Profile: undefined;
-  NewsDetails: { news: any };
+  NewsDetails: { news: string; isLoadingWebpage?: boolean };
+  BookmarkedNewsListing: undefined;
 };

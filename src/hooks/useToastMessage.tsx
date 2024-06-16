@@ -15,6 +15,7 @@ import IconError from '~/components/svgs/ErrorIcon';
 import { ToastMessageType, ToastType } from '~/contextAPI/toast-message/types';
 import { useAppSelector } from '~/store';
 import { appThemeColors } from '~/styles/colors';
+import { appFontFamily } from '~/styles/fonts';
 
 const appLightThemeColors = appThemeColors.LIGHT;
 
@@ -71,7 +72,7 @@ function CustomToastMessageContainer({ props }: ToastOptions) {
         style={[
           styles.body,
           {
-            borderColor: themeSelector.colors.light,
+            borderColor: themeSelector.colors.main.background,
           },
         ]}
       >
@@ -86,13 +87,13 @@ function CustomToastMessageContainer({ props }: ToastOptions) {
         </View>
 
         <View style={[styles.messageWrapper]}>
-          <Text style={{ lineHeight: 20.3, fontFamily: 'montserratSemibold' }}>
+          <Text style={{ lineHeight: 20.3, fontFamily: appFontFamily.medium }}>
             {props.title}
           </Text>
           <Text
             style={{
               lineHeight: 20,
-              color: themeSelector.colors.textSecondary,
+              color: themeSelector.colors.text.secondary,
             }}
           >
             {props.message}
@@ -106,7 +107,7 @@ function CustomToastMessageContainer({ props }: ToastOptions) {
             { borderColor: appLightThemeColors.grey25 },
           ]}
         >
-          <IconClose color={themeSelector.colors.textPrimary} />
+          <IconClose color={themeSelector.colors.text.primary} />
         </Pressable>
       </View>
     </View>

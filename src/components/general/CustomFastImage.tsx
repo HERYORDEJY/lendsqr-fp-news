@@ -19,7 +19,7 @@ export default function CustomFastImage(props: Props) {
 
   return (
     <FastImage
-      style={[{ aspectRatio: 1 }, props.style]}
+      style={[props.style]}
       source={
         props.source ?? {
           uri: props.imageUri,
@@ -27,7 +27,7 @@ export default function CustomFastImage(props: Props) {
           priority: FastImage.priority.normal,
         }
       }
-      resizeMode={FastImage.resizeMode.cover}
+      resizeMode={props.resizeMode ?? FastImage.resizeMode.cover}
     />
   );
 }

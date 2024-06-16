@@ -1,17 +1,26 @@
+import firestore from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import {
   createNativeStackNavigator,
   NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import CustomFastImage from '~/components/general/CustomFastImage';
+import BookmarkCircledIcon from '~/components/svgs/BookmarkCircledIcon';
+import BookmarkFilledIcon from '~/components/svgs/BookmarkFilledIcon';
+import BookmarkOutlinedIcon from '~/components/svgs/BookmarkOutlinedIcon';
 import { useThemeColors } from '~/hooks/useThemeColors';
+import { useToastMessage } from '~/hooks/useToastMessage';
+import BookmarkedNewsListing from '~/screens/news/BookmarkedNewsListing';
 import NewsDetails from '~/screens/news/NewsDetails';
 import NewsListing from '~/screens/news/NewsListing';
 import Profile from '~/screens/profile/Profile';
-import { useAppSelector } from '~/store';
+import { useAppDispatch, useAppSelector } from '~/store';
+import { addBookmarkAction, removeBookmarkAction } from '~/store/news/slice';
+import { NewsArticleDataType } from '~/store/news/types';
 import { appThemeColors } from '~/styles/colors';
 import { appFontFamily } from '~/styles/fonts';
+import { isAndroidDevice } from '~/utils/device';
 import { NewsStackParamList } from './types';
 
 const { Navigator, Screen } = createNativeStackNavigator<NewsStackParamList>();
@@ -19,10 +28,49 @@ const { Navigator, Screen } = createNativeStackNavigator<NewsStackParamList>();
 export default function NewsStack() {
   const { colors, tabBar } = useThemeColors();
   const authenticationStore = useAppSelector(state => state.authentication);
+  const toastMessage = useToastMessage();
+  const newsStore = useAppSelector(state => state.news);
+  const appDispatch = useAppDispatch();
   const navigation =
     useNavigation<
       NativeStackNavigationProp<NewsStackParamList, 'NewsListing'>
     >();
+
+  const onAddBookmarkToFirebase = async (url: string) => {
+    const docRef = firestore()
+      .collection('bookmarkedNews')
+      .doc(authenticationStore.user?.uid);
+
+    try {
+      await docRef
+        .update({
+          urls: firestore.FieldValue.arrayUnion(url),
+        })
+        .then(() => appDispatch(addBookmarkAction(url)));
+      toastMessage.success({ message: 'News bookmarked successfully' });
+    } catch (error) {
+      toastMessage.error({ message: `Unable to bookmark news:', ${error}` });
+    }
+  };
+
+  const onRemoveBookmarkFromFirebase = async (urlToRemove: string) => {
+    const docRef = firestore()
+      .collection('bookmarkedNews')
+      .doc(authenticationStore.user?.uid);
+
+    try {
+      const doc = await docRef.get();
+      let urls = doc.data()?.urls;
+      urls = urls?.filter?.((url: string) => url !== urlToRemove);
+
+      await docRef
+        .update({ urls })
+        .then(() => appDispatch(removeBookmarkAction(urlToRemove)));
+      toastMessage.success({ message: 'Removed bookmarked successfully' });
+    } catch (error) {
+      toastMessage.error({ message: `Unable to remove bookmark:', ${error}` });
+    }
+  };
 
   return (
     <Navigator
@@ -47,15 +95,57 @@ export default function NewsStack() {
         options={{
           headerTitle: 'News',
           headerLargeTitle: true,
-
           headerRight(props) {
             return (
               <TouchableOpacity
-                style={styles.profileImageButton}
+                style={styles.bookmarkButton}
+                onPress={() => navigation.navigate('BookmarkedNewsListing')}
+              >
+                <BookmarkCircledIcon color={colors.colorFromLogo.brown} />
+              </TouchableOpacity>
+            );
+          },
+          headerLeft(props) {
+            return (
+              <TouchableOpacity
+                style={[
+                  styles.profileImageButton,
+                  {
+                    backgroundColor: colors.colorFromLogo.brown,
+                    marginRight: isAndroidDevice ? 20 : 0,
+                    marginBottom: !isAndroidDevice ? 20 : 0,
+                  },
+                ]}
                 onPress={() => navigation.navigate('Profile')}
               >
                 <CustomFastImage
-                  imageUri={`https://gravatar.com/avatar/${authenticationStore.user?.uid}?s=400&d=robohash&r=x`}
+                  imageUri={authenticationStore.bio?.photoUrl}
+                  style={{ aspectRatio: 1 }}
+                />
+              </TouchableOpacity>
+            );
+          },
+        }}
+      />
+      <Screen
+        name="BookmarkedNewsListing"
+        component={BookmarkedNewsListing}
+        options={{
+          headerTitle: 'Bookmarked News',
+          headerLargeTitle: false,
+          headerBackTitleVisible: false,
+          headerRight(props) {
+            return (
+              <TouchableOpacity
+                style={[
+                  styles.profileImageButton,
+                  { backgroundColor: colors.colorFromLogo.brown },
+                ]}
+                onPress={() => navigation.navigate('Profile')}
+              >
+                <CustomFastImage
+                  imageUri={authenticationStore.bio?.photoUrl}
+                  style={{ aspectRatio: 1 }}
                 />
               </TouchableOpacity>
             );
@@ -65,7 +155,48 @@ export default function NewsStack() {
       <Screen
         name="NewsDetails"
         component={NewsDetails}
-        options={{ headerBackTitleVisible: false }}
+        initialParams={{ isLoadingWebpage: true }}
+        options={({ route }) => ({
+          headerBackTitleVisible: false,
+          headerTitle: '',
+          headerRight(props) {
+            const news: NewsArticleDataType = JSON.parse(route.params.news);
+            const isNewsBookmarked = () =>
+              Boolean(
+                newsStore.bookmarkedNews?.urls.find?.(url => url === news.url),
+              );
+
+            const onToggleBookmark = async () => {
+              if (isNewsBookmarked()) {
+                await onRemoveBookmarkFromFirebase(news.url);
+                return;
+              }
+              await onAddBookmarkToFirebase(news.url);
+            };
+
+            if (
+              route.params.isLoadingWebpage ||
+              !Boolean(newsStore.bookmarkedNews?.urls.length)
+            ) {
+              return null;
+            }
+
+            return (
+              <View style={styles.itemRow}>
+                <TouchableOpacity
+                  style={styles.bookmarkButton}
+                  onPress={onToggleBookmark}
+                >
+                  {isNewsBookmarked() ? (
+                    <BookmarkFilledIcon color={colors.colorFromLogo.red} />
+                  ) : (
+                    <BookmarkOutlinedIcon color={'#AAAAAA'} />
+                  )}
+                </TouchableOpacity>
+              </View>
+            );
+          },
+        })}
       />
       <Screen
         name="Profile"
@@ -82,5 +213,18 @@ const styles = StyleSheet.create({
     width: 40,
     borderRadius: 48,
     overflow: 'hidden',
+    // justifyContent: 'center',
+    // alignItems: 'center',
+  },
+  bookmarkButton: {
+    height: 40,
+    width: 40,
+    borderRadius: 48,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  itemRow: {
+    flexDirection: 'row',
   },
 });

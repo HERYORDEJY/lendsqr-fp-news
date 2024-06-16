@@ -1,5 +1,7 @@
 export interface NewsState {
-  articles: any[];
+  everything: Array<NewsArticleDataType> | null;
+  topHeadlines: Array<NewsArticleDataType> | null;
+  bookmarkedNews: { urls: Array<string> } | null;
 }
 
 export interface NewsArticleDataType {

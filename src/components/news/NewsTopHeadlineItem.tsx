@@ -1,3 +1,5 @@
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { formatDistanceToNowStrict } from 'date-fns';
 import React from 'react';
 import {
@@ -9,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { useThemeColors } from '~/hooks/useThemeColors';
+import { NewsStackParamList } from '~/navigations/types';
 import { NewsArticleDataType } from '~/store/news/types';
 import { appThemeColors } from '~/styles/colors';
 import { appFontFamily } from '~/styles/fonts';
@@ -16,15 +19,23 @@ import CustomFastImage from '../general/CustomFastImage';
 import ClockIcon from '../svgs/ClockIcon';
 
 interface Props extends TouchableOpacityProps {
-  news: NewsArticleDataType; //    TODO: get news item data type
+  news: NewsArticleDataType;
   index: number;
 }
 
 const Component = ({ news, ...props }: Props) => {
   const windowDimensions = useWindowDimensions();
   const { card, text } = useThemeColors();
+  const navigation =
+    useNavigation<
+      NativeStackNavigationProp<NewsStackParamList, 'NewsListing'>
+    >();
+
   return (
     <TouchableOpacity
+      onPress={() =>
+        navigation.navigate('NewsDetails', { news: JSON.stringify(news) })
+      }
       style={[
         styles.container,
         {
@@ -48,7 +59,7 @@ const Component = ({ news, ...props }: Props) => {
           <Text style={styles.source}>{news.source.name}</Text>
 
           <View style={[styles.sourceWrapper, { columnGap: 4 }]}>
-            <ClockIcon width={10} height={10} />
+            <ClockIcon width={10} height={10} color={'#007AFF'} />
             <Text style={[styles.date, { color: text.secondary }]}>
               {formatDistanceToNowStrict(new Date(news.publishedAt), {
                 addSuffix: true,
@@ -56,7 +67,9 @@ const Component = ({ news, ...props }: Props) => {
             </Text>
           </View>
         </View>
-        <Text style={styles.title}>{news.title}</Text>
+        <Text style={styles.title} numberOfLines={3}>
+          {news.title}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -66,7 +79,7 @@ const NewsTopHeadlineItem = Component; // React.memo(Component);
 export default NewsTopHeadlineItem;
 
 const styles = StyleSheet.create({
-  container: { marginRight: 20 },
+  container: { marginRight: 20, height: 250 },
   imageWrapper: { width: '100%', overflow: 'hidden' },
   image: { aspectRatio: 1 },
   descWrapper: {
