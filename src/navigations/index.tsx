@@ -7,7 +7,6 @@ import setDefaultProps from 'react-native-simple-default-props';
 import CustomScreenContainer from '~/components/general/CustomScreenContainer';
 import { useThemeColors } from '~/hooks/useThemeColors';
 import { useAppDispatch, useAppSelector } from '~/store';
-import { setAuthStoreStateAction } from '~/store/auth/authSlice';
 import { appFontFamily } from '~/styles/fonts';
 import AuthenticationStack from './AuthenticationStack';
 import NewsStack from './NewsStack';
@@ -19,35 +18,35 @@ export default function RootNavigation() {
   const [initializing, setInitializing] = useState(true);
 
   const onAuthStateChanged = (user: any) => {
-    if (user) {
-      appDispatch(
-        setAuthStoreStateAction(
-          user
-            ? {
-                user: {
-                  displayName: user.displayName,
-                  multiFactor: user.multiFactor!,
-                  isAnonymous: user.isAnonymous,
-                  emailVerified: user.emailVerified,
-                  providerData: user.providerData,
-                  uid: user.uid,
-                  email: user.email,
-                  phoneNumber: user.phoneNumber,
-                  photoURL: user.photoURL,
-                  metadata: user.metadata,
-                  providerId: user.providerId,
-                  // refreshToken: user.refreshToken,
-                  tenantId: user.tenantId,
-                },
-                isLoggedIn: true,
-              }
-            : { user: null, isLoggedIn: false },
-        ),
-      );
-    }
+    // if (user) {
+    //   appDispatch(
+    //     setAuthStoreStateAction(
+    //       user
+    //         ? {
+    //             user: {
+    //               displayName: user.displayName,
+    //               multiFactor: user.multiFactor!,
+    //               isAnonymous: user.isAnonymous,
+    //               emailVerified: user.emailVerified,
+    //               providerData: user.providerData,
+    //               uid: user.uid,
+    //               email: user.email,
+    //               phoneNumber: user.phoneNumber,
+    //               photoURL: user.photoURL,
+    //               metadata: user.metadata,
+    //               providerId: user.providerId,
+    //               // refreshToken: user.refreshToken,
+    //               tenantId: user.tenantId,
+    //             },
+    //             isLoggedIn: true,
+    //           }
+    //         : { user: null, isLoggedIn: false },
+    //     ),
+    //   );
+    // }
 
     if (initializing) {
-      setInitializing(false), 4321;
+      setInitializing(false);
     }
   };
 

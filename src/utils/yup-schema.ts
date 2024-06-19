@@ -50,19 +50,4 @@ export const signUpSchema = yup.object().shape({
         return /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(value);
       },
     ),
-  password: yup
-    .string()
-    .trim()
-    .required('Password is required')
-    .min(8, 'Password should contain a minimum of 8 characters.')
-    .test('password', passwordValidityInfo, value => {
-      return passwordRegex.test(value);
-    }),
-  confirmPassword: yup
-    .string()
-    .trim()
-    .required('Confirm password is required')
-    .test('passwords-match', 'Passwords must match', function (value) {
-      return this.parent.password === value;
-    }),
 });

@@ -3,7 +3,6 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import React, { useState } from 'react';
 import {
   Alert,
-  Button,
   StyleSheet,
   Switch,
   Text,
@@ -21,7 +20,6 @@ import { useThemeColors } from '~/hooks/useThemeColors';
 import { useAppDispatch, useAppSelector } from '~/store';
 import { switchThemeModeAction } from '~/store/theme/themeSlice';
 import { appFontFamily } from '~/styles/fonts';
-import auth from '@react-native-firebase/auth';
 
 export default function Profile() {
   const authenticationStore = useAppSelector(state => state.authentication);
@@ -48,7 +46,7 @@ export default function Profile() {
     setIsCheckingForUpdate(true);
     CodePush.checkForUpdate()
       .then(update => {
-        console.log('update', update);
+        // console.log('update', update);
         if (update) {
           // setUpdateInfo(update);
           return Alert.alert(
@@ -75,15 +73,6 @@ export default function Profile() {
       });
   };
 
-  const updatePhone = async () => {
-    //
-    const user = auth().currentUser;
-    if (user) {
-      await user.updateProfile({ phoneNumber });
-      console.log('Phone number updated successfully!');
-    }
-  };
-
   return (
     <CustomScreenContainer isTopSafeArea={false}>
       <View style={styles.container}>
@@ -96,8 +85,8 @@ export default function Profile() {
           >
             <CustomFastImage
               imageUri={
-                authenticationStore.bio?.photoUrl ??
-                authenticationStore?.user?.photoURL
+                authenticationStore?.user?.providerData?.[0]?.photoURL ??
+                authenticationStore.bio?.photoUrl
               }
               style={{ aspectRatio: 1 }}
             />
@@ -191,8 +180,6 @@ export default function Profile() {
           </TouchableOpacity>
         </CustomSectionWrapper>
       </View>
-
-      <Button title="000" onPress={updatePhone} />
     </CustomScreenContainer>
   );
 }

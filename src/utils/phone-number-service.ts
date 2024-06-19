@@ -5,7 +5,7 @@ export const sendVerificationCode = async (phoneNumber: string) => {
     const confirmation = await auth().verifyPhoneNumber(phoneNumber);
     return confirmation;
   } catch (error) {
-    console.error('Phone number verification failed:', error);
+    // console.error('Phone number verification failed:', error);
     throw error;
   }
 };
@@ -18,7 +18,7 @@ export const confirmVerificationCode = async (
     const credential = auth.PhoneAuthProvider.credential(verificationId, code);
     return credential;
   } catch (error) {
-    console.error('Verification code confirmation failed:', error);
+    // console.error('Verification code confirmation failed:', error);
     throw error;
   }
 };
@@ -35,12 +35,12 @@ export const updatePhoneNumber = async (
     const user = auth().currentUser;
     if (user) {
       await user.updatePhoneNumber(credential);
-      console.log('Phone number updated successfully!');
+      // console.log('Phone number updated successfully!');
     } else {
       throw new Error('Ty again');
     }
   } catch (error) {
-    console.error('Failed to update phone number:', error);
+    // console.error('Failed to update phone number:', error);
     throw error;
   }
 };

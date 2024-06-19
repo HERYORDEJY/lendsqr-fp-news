@@ -16,6 +16,7 @@ declare module 'react-native-config' {
     LendsqrFpNews_ANDROID_APPCENTER_CODEPUSH_DEPLOYMENT_STAGING_KEY?: string;
     LendsqrFpNews_ANDROID_APPCENTER_CODEPUSH_DEPLOYMENT_PRODUCTION_KEY?: string;
     LendsqrFpNews_ANDROID_APPCENTER_APP_SECRET?: string;
+    GOOGLE_WEB_CLIENT_ID?: string;
   }
 
   export const Config: NativeConfig;

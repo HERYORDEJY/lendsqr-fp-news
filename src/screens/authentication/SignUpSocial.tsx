@@ -1,5 +1,4 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import auth from '@react-native-firebase/auth';
+import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import {
   NavigationProp,
@@ -7,9 +6,9 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import React, { useRef, useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -18,13 +17,13 @@ import {
   Text,
   View,
 } from 'react-native';
+import ActionSheet, { ActionSheetRef } from 'react-native-actions-sheet';
 import AuthScreenHeader from '~/components/authententication/AuthScreenHeader';
 import PrimaryButton from '~/components/buttons/PrimaryButtom';
+import SocialAuthButton from '~/components/buttons/SocialAuthButton';
+import CustomActionSheetContainer from '~/components/general/CustomActionSheetContainer';
 import CustomScreenContainer from '~/components/general/CustomScreenContainer';
-import EmailInput from '~/components/inputs/EmailInput';
 import PasswordInput from '~/components/inputs/PasswordInput';
-import CustomTextInput from '~/components/inputs/TextInput';
-import UserIcon from '~/components/svgs/UserIcon';
 import { useThemeColors } from '~/hooks/useThemeColors';
 import { useToastMessage } from '~/hooks/useToastMessage';
 import { AuthenticationStackParamList } from '~/navigations/types';
@@ -33,67 +32,95 @@ import { setAuthStoreStateAction } from '~/store/auth/authSlice';
 import { appFontFamily } from '~/styles/fonts';
 import { isAndroidDevice } from '~/utils/device';
 import { generateRandomHex } from '~/utils/generate';
-import { signUpSchema } from '~/utils/yup-schema';
+import {
+  sendVerificationCode,
+  updatePhoneNumber,
+} from '~/utils/phone-number-service';
 
 export default function SignUpSocial() {
   const { text } = useThemeColors();
   const appDispatch = useAppDispatch();
   const { button, input } = useThemeColors();
+  const [loading, setLoading] = useState(false);
+  const toastMessage = useToastMessage();
   const navigation =
     useNavigation<
       NavigationProp<AuthenticationStackParamList, 'SignUpSocial'>
     >();
-
   const route =
-    useRoute<RouteProp<AuthenticationStackParamList, 'SignUpSocial'>>();
+      useRoute<RouteProp<AuthenticationStackParamList, 'SignUpSocial'>>(),
+    form = JSON.parse(route.params.form);
 
-  const form = JSON.parse(route.params.form);
-
-  const [loading, setLoading] = useState(false);
-  const toastMessage = useToastMessage();
-  const formMethods = useForm({
-      resolver: yupResolver(
-        // @ts-ignore
-        signUpSchema,
-      ),
-      defaultValues: {
-        email: '',
-        password: '',
-      },
-    }),
-    formValues = formMethods.getValues(),
-    formErrors = formMethods.formState.errors;
-
-  async function signUpWithEmail(values: typeof formValues) {
-    setLoading(true);
+  const phoneVerifySheetRef = useRef<ActionSheetRef | null>(null);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationId, setVerificationId] = useState('');
+  const [verificationCodeError, setVerificationCodeError] = useState(null);
+  const [isRequestingCode, setIsRequestingCode] = useState(false);
+  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
+  const onRequestPhoneVerificationCode = async () => {
+    setIsRequestingCode(true);
+    const phoneNumber = form.phoneNumber;
     try {
-      // Create user with email and password
-      const userCredential = await auth().createUserWithEmailAndPassword(
-        values.email,
-        values.password!,
-      );
-      const user = userCredential.user;
+      const confirmation = await sendVerificationCode(phoneNumber);
+      setVerificationId(confirmation.verificationId);
+      toastMessage.success({
+        message: `Verification code sent to ${phoneNumber}`,
+      });
+      phoneVerifySheetRef.current?.show();
+      setIsRequestingCode(false);
+    } catch (error) {
+      console.error('Failed to send verification code:', error);
+      toastMessage.error({ message: 'Failed to send verification code.' });
+      setIsRequestingCode(false);
+    }
+  };
+
+  const onVerifyPhoneCode = async () => {
+    setIsVerifyingCode(true);
+    const phoneNumber = form.phoneNumber;
+    if (verificationId) {
+      try {
+        await updatePhoneNumber(phoneNumber, verificationId, verificationCode);
+        toastMessage.success({
+          message: 'Phone number verified successfully!',
+        });
+        phoneVerifySheetRef.current?.hide();
+        setIsVerifyingCode(false);
+      } catch (error) {
+        // console.error('Failed to verify code:', error);
+        toastMessage.error({ message: 'Failed to verify code.' });
+        setIsVerifyingCode(false);
+      }
+    } else {
+      Alert.alert('Error', 'Please request a verification code first.');
+    }
+  };
+
+  async function onSignUpGoogle(response: {
+    additionalUserInfo: FirebaseAuthTypes.AdditionalUserInfo | undefined;
+    user: FirebaseAuthTypes.User;
+  }) {
+    setLoading(true);
+    const { user, additionalUserInfo } = response;
+    try {
       const photoUrl = `https://gravatar.com/avatar/${generateRandomHex()}?s=400&d=robohash&r=x`;
 
       // Update user profile with additional info
-      await userCredential.user.updateProfile({
-        displayName: values.fullName,
+      await user.updateProfile({
+        displayName: form.fullName,
         photoURL: photoUrl,
       });
 
-      await firestore()
-        .collection('users')
-        .doc(user.uid)
-        .set({
-          fullName: values.fullName,
-          phoneNumber: values.phoneNumber,
-          emailAddress: values.email,
-          photoUrl,
-        })
-        .then(console.log);
+      await firestore().collection('users').doc(user.uid).set({
+        fullName: form.fullName,
+        phoneNumber: form.phoneNumber,
+        emailAddress: form.email,
+        photoUrl,
+      });
 
       appDispatch(
         setAuthStoreStateAction({
+          additionalUserInfo,
           user: {
             displayName: user.displayName,
             multiFactor: user.multiFactor!,
@@ -101,16 +128,16 @@ export default function SignUpSocial() {
             emailVerified: user.emailVerified,
             providerData: user.providerData,
             uid: user.uid,
-            email: values.email,
+            email: form.email,
             phoneNumber: user.phoneNumber,
             photoURL: user.photoURL,
             metadata: user.metadata,
             providerId: user.providerId,
           },
           bio: {
-            fullName: values.fullName,
-            phoneNumber: values.phoneNumber,
-            emailAddress: values.email,
+            fullName: form.fullName,
+            phoneNumber: form.phoneNumber,
+            emailAddress: form.email,
             photoUrl,
           },
           isLoggedIn: true,
@@ -134,102 +161,16 @@ export default function SignUpSocial() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <CustomScreenContainer>
-        <ScrollView contentContainerStyle={styles.contentContainer}>
-          <View style={[styles.container]}>
-            <AuthScreenHeader
-              title="Create Account"
-              description=" Please enter your credentials to continue."
-            />
+        <View style={[styles.container]}>
+          <AuthScreenHeader
+            title="Google Sign up"
+            description=" Please select your preferred google account to continue."
+          />
 
-            <View style={[styles.form]}>
-              <Controller
-                render={({ field }) => {
-                  return (
-                    <CustomTextInput
-                      label="Full Name"
-                      onChangeText={field.onChange}
-                      errorMessage={formErrors.fullName?.message}
-                      value={field.value}
-                      placeholder="Enter your full name"
-                      leftElement={<UserIcon color={input.iconColor} />}
-                    />
-                  );
-                }}
-                name={'fullName'}
-                control={formMethods.control}
-              />
-
-              <Controller
-                render={({ field }) => {
-                  return (
-                    <EmailInput
-                      onChangeText={field.onChange}
-                      errorMessage={formErrors.email?.message}
-                      value={field.value}
-                    />
-                  );
-                }}
-                name={'email'}
-                control={formMethods.control}
-              />
-              {/* TODO: crate a phone number input */}
-              <Controller
-                render={({ field }) => {
-                  return (
-                    <CustomTextInput
-                      label="Phone Number"
-                      onChangeText={field.onChange}
-                      errorMessage={formErrors.phoneNumber?.message}
-                      value={field.value}
-                      placeholder="Enter your phone number"
-                      leftElement={<UserIcon color={input.iconColor} />}
-                    />
-                  );
-                }}
-                name={'phoneNumber'}
-                control={formMethods.control}
-              />
-
-              <Controller
-                render={({ field }) => {
-                  return (
-                    <PasswordInput
-                      onChangeText={field.onChange}
-                      errorMessage={formErrors.password?.message}
-                      value={field.value}
-                    />
-                  );
-                }}
-                name={'password'}
-                control={formMethods.control}
-              />
-
-              <Controller
-                render={({ field }) => {
-                  return (
-                    <PasswordInput
-                      label="Confirm Password"
-                      onChangeText={field.onChange}
-                      errorMessage={formErrors.confirmPassword?.message}
-                      value={field.value}
-                    />
-                  );
-                }}
-                name={'confirmPassword'}
-                control={formMethods.control}
-              />
-            </View>
-
-            <View>
-              <PrimaryButton
-                animating={loading}
-                title="Sign Up"
-                onPress={formMethods.handleSubmit(signUpWithEmail)}
-                // disabled={loading || !formMethods.formState.isValid}
-              />
-            </View>
+          <View style={[styles.form]}>
+            <SocialAuthButton type="google" onSignInGoogle={onSignUpGoogle} />
           </View>
-        </ScrollView>
+        </View>
         <Pressable
           disabled={loading}
           style={[
@@ -255,6 +196,37 @@ export default function SignUpSocial() {
           </Text>
         </Pressable>
       </CustomScreenContainer>
+      <ActionSheet ref={phoneVerifySheetRef}>
+        <CustomActionSheetContainer
+          sheetRef={phoneVerifySheetRef}
+          title="Phone Number Verification"
+          containerStyle={{ rowGap: 32 }}
+        >
+          <ScrollView style={styles.phoneVerifContainer}>
+            <AuthScreenHeader
+              title="Phone Verification"
+              description=" Please the code sent to the provided phone number."
+            />
+            <View style={[styles.form, { marginVertical: 32 }]}>
+              <PasswordInput
+                label="Phone Verification code"
+                onChangeText={setVerificationCode}
+                errorMessage={verificationCodeError}
+                value={verificationCode}
+                placeholder="Enter your verification code here."
+                maxLength={6}
+              />
+            </View>
+          </ScrollView>
+          <PrimaryButton
+            disabled={verificationCode.length !== 6}
+            isLoading={isVerifyingCode}
+            title="Submit"
+            onPress={onVerifyPhoneCode}
+            containerStyle={{ marginHorizontal: 20 }}
+          />
+        </CustomActionSheetContainer>
+      </ActionSheet>
     </KeyboardAvoidingView>
   );
 }
@@ -263,6 +235,10 @@ const styles = StyleSheet.create({
   contentContainer: { paddingHorizontal: 20, paddingVertical: 40 },
   container: {
     rowGap: 24,
+    paddingHorizontal: 20,
+    paddingVertical: 40,
+    flex: 1,
+    justifyContent: 'center',
   },
 
   form: {
@@ -288,6 +264,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dontText: { fontSize: 16 },
+  phoneVerifContainer: {
+    padding: 20,
+  },
 });
 
 const _ = {
@@ -319,5 +298,8 @@ const _ = {
     photoURL: null,
     metadata: { creationTime: 1718353788529, lastSignInTime: 1718353788529 },
     providerId: 'firebase',
+  },
+  phoneVerifContainer: {
+    padding: 20,
   },
 };

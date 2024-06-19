@@ -1,24 +1,11 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import auth from '@react-native-firebase/auth';
+import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import AuthScreenHeader from '~/components/authententication/AuthScreenHeader';
-import PrimaryButton from '~/components/buttons/PrimaryButtom';
 import SocialAuthButton from '~/components/buttons/SocialAuthButton';
 import CustomScreenContainer from '~/components/general/CustomScreenContainer';
-import EmailInput from '~/components/inputs/EmailInput';
-import PasswordInput from '~/components/inputs/PasswordInput';
 import { useThemeColors } from '~/hooks/useThemeColors';
 import { useToastMessage } from '~/hooks/useToastMessage';
 import { AuthenticationStackParamList } from '~/navigations/types';
@@ -26,7 +13,6 @@ import { useAppDispatch } from '~/store';
 import { setAuthStoreStateAction } from '~/store/auth/authSlice';
 import { appFontFamily } from '~/styles/fonts';
 import { isAndroidDevice } from '~/utils/device';
-import { logInSchema } from '~/utils/yup-schema';
 
 export default function Login() {
   const [isLoginIn, setIsLoginIn] = useState(false);
@@ -34,34 +20,25 @@ export default function Login() {
   const { button } = useThemeColors();
   const toastMessage = useToastMessage();
   const { text } = useThemeColors();
-  const formMethods = useForm({
-      resolver: yupResolver(
-        // @ts-ignore
-        logInSchema,
-      ),
-    }),
-    formValues = formMethods.getValues(),
-    formErrors = formMethods.formState.errors;
+
   const navigation =
     useNavigation<NavigationProp<AuthenticationStackParamList, 'Login'>>();
 
-  async function onLogIn(values: typeof formValues) {
-    setIsLoginIn(true);
+  async function onSignInGoogle(response: {
+    additionalUserInfo: FirebaseAuthTypes.AdditionalUserInfo | undefined;
+    user: FirebaseAuthTypes.User;
+  }) {
     try {
-      const res = await auth().signInWithEmailAndPassword(
-        values.email,
-        values.password,
-      );
-      const user = res.user;
+      setIsLoginIn(true);
+      const { user, additionalUserInfo } = response;
 
       await firestore()
         .collection('users')
-        .doc(res.user.uid)
+        .doc(user.uid)
         .get()
         .then(documentSnapshot => {
           if (documentSnapshot.exists) {
             const bio = documentSnapshot.data();
-            // appDispatch(setAuthStoreBioAction(bio));
             appDispatch(
               setAuthStoreStateAction({
                 user: {
@@ -71,17 +48,22 @@ export default function Login() {
                   emailVerified: user.emailVerified,
                   providerData: user.providerData,
                   uid: user.uid,
-                  email: values.email,
+                  email: user.email,
                   phoneNumber: user.phoneNumber,
                   photoURL: user.photoURL,
                   metadata: user.metadata,
                   providerId: user.providerId,
                 },
-                additionalUserInfo: res.additionalUserInfo,
+                additionalUserInfo,
                 bio,
                 isLoggedIn: true,
               }),
             );
+          } else {
+            toastMessage.error({
+              message: 'You are required to sign up.',
+            });
+            navigation.navigate('SignUpBio');
           }
         });
     } catch (error: any) {
@@ -95,135 +77,59 @@ export default function Login() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <CustomScreenContainer>
-        <ScrollView contentContainerStyle={styles.contentContainer}>
-          <View style={[styles.container]}>
-            <AuthScreenHeader
-              title="Welcome back"
-              description="Please enter your credentials to continue."
-            />
+    <CustomScreenContainer>
+      <View style={[styles.container]}>
+        <AuthScreenHeader
+          title="Welcome back"
+          description="Please select your registered google account to continue."
+        />
 
-            <View style={[styles.form]}>
-              <Controller
-                render={({ field }) => {
-                  return (
-                    <EmailInput
-                      onChangeText={field.onChange}
-                      errorMessage={formErrors.email?.message}
-                      value={field.value}
-                    />
-                  );
-                }}
-                name={'email'}
-                control={formMethods.control}
-              />
-
-              <View style={[styles.form]}>
-                <Controller
-                  render={({ field }) => {
-                    return (
-                      <PasswordInput
-                        onChangeText={field.onChange}
-                        errorMessage={formErrors.password?.message}
-                        value={field.value}
-                      />
-                    );
-                  }}
-                  name={'password'}
-                  control={formMethods.control}
-                />
-              </View>
-            </View>
-
-            <Pressable
-              disabled={isLoginIn}
-              style={styles.forgotPassword}
-              onPress={() => {
-                // navigation.navigate('ForgotPassword', {
-                //   userRole: route.params.userRole,
-                // })
-              }}
-            >
-              <Text
-                style={[styles.forgotPasswordText, { color: text?.primary }]}
-              >
-                Forgot Password?
-              </Text>
-            </Pressable>
-
-            <PrimaryButton
-              containerStyle={{ marginTop: 16 }}
-              onPress={formMethods.handleSubmit(onLogIn)}
-              isLoading={isLoginIn}
-              title="Sign In"
-              // disabled={isSigninEmail || !formMethods.formState.isValid}
-            />
-            <>
-              <View style={[styles.orButton, ,]}>
-                <Text
-                  style={[
-                    styles.forgotPasswordText,
-                    { color: text?.secondary },
-                  ]}
-                >
-                  or
-                </Text>
-              </View>
-              <View style={styles.socialAuthWrapper}>
-                <SocialAuthButton type="google" />
-                {/* <SocialAuthButton type="apple" /> */}
-              </View>
-            </>
-          </View>
-        </ScrollView>
-        <Pressable
-          disabled={isLoginIn}
+        <View style={[styles.form]}>
+          <SocialAuthButton type="google" onSignInGoogle={onSignInGoogle} />
+        </View>
+      </View>
+      <Pressable
+        disabled={isLoginIn}
+        style={[styles.dontButton, { paddingBottom: isAndroidDevice ? 16 : 0 }]}
+        onPress={() => navigation.navigate('SignUpBio')}
+      >
+        <Text style={[styles.dontText, { color: text?.secondary }]}>
+          Don't have an account?{' '}
+        </Text>
+        <Text
           style={[
-            styles.dontButton,
-            { paddingBottom: isAndroidDevice ? 16 : 0 },
+            styles.dontText,
+            {
+              color: button.primary.background,
+              fontFamily: appFontFamily.medium,
+            },
           ]}
-          onPress={() => navigation.navigate('SignUpBio')}
         >
-          <Text style={[styles.dontText, { color: text?.secondary }]}>
-            Don't have an account?{' '}
-          </Text>
-          <Text
-            style={[
-              styles.dontText,
-              {
-                color: button.primary.background,
-                fontFamily: appFontFamily.medium,
-              },
-            ]}
-          >
-            Sign Up
-          </Text>
-        </Pressable>
-      </CustomScreenContainer>
-    </KeyboardAvoidingView>
+          Sign Up
+        </Text>
+      </Pressable>
+    </CustomScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  contentContainer: { paddingHorizontal: 20, paddingVertical: 40 },
+  contentContainer: {},
   container: {
+    paddingHorizontal: 20,
+    paddingVertical: 40,
     rowGap: 24,
+    justifyContent: 'center',
+    flex: 1,
   },
 
   accountText: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    // marginBottom: 21,
   },
   forgotPassword: {
     marginVertical: 5,
     marginLeft: 'auto',
-    // marginRight: 26,
   },
   forgotPasswordText: {
     fontFamily: appFontFamily.medium,

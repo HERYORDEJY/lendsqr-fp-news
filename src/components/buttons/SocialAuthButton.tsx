@@ -1,5 +1,5 @@
 import { appleAuth } from '@invertase/react-native-apple-authentication';
-import auth from '@react-native-firebase/auth';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import {
   GoogleSignin,
   statusCodes,
@@ -14,24 +14,27 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
 } from 'react-native';
+import Config from 'react-native-config';
 import AppleIcon from '~/components/svgs/AppleIcon';
 import GoogleIcon from '~/components/svgs/GoogleIcon';
 import { useToastMessage } from '~/hooks/useToastMessage';
 import { useAppDispatch } from '~/store';
-import { setAuthStoreStateAction } from '~/store/auth/authSlice';
 import { appFontFamily } from '~/styles/fonts';
 
 const configureGoogleSignIn = () => {
   GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-    webClientId:
-      '819087675772-52ieuiko1tkc8enci3405q6s1kaufn4n.apps.googleusercontent.com', //`autoDetect`,
+    webClientId: Config.GOOGLE_WEB_CLIENT_ID, //`autoDetect`,
   });
 };
 
 interface Props extends TouchableOpacityProps {
   title?: string;
   type: 'google' | 'apple';
+  onSignInGoogle?: (response: {
+    additionalUserInfo: FirebaseAuthTypes.AdditionalUserInfo | undefined;
+    user: FirebaseAuthTypes.User;
+  }) => void;
 }
 
 export default function SocialAuthButton(props: Props) {
@@ -77,33 +80,17 @@ export default function SocialAuthButton(props: Props) {
       );
 
       if (user.uid) {
-        appDispatch(
-          setAuthStoreStateAction({
-            user: {
-              displayName: user.displayName,
-              multiFactor: user.multiFactor!,
-              isAnonymous: user.isAnonymous,
-              emailVerified: user.emailVerified,
-              providerData: user.providerData,
-              uid: user.uid,
-              email: user.email!,
-              phoneNumber: user.phoneNumber,
-              photoURL: user.photoURL,
-              metadata: user.metadata,
-              providerId: user.providerId,
-            },
-            additionalUserInfo,
-            isLoggedIn: true,
-          }),
-        );
+        props.onSignInGoogle?.({ user, additionalUserInfo });
       } else {
         return toastMessage.error({
           title: 'Sign in error',
           message: 'Unable to sign in with the provided Google mail',
         });
       }
+      setIsContinuingGoogle(false);
     } catch (error: any) {
-      console.log('\n\nonContinueWithGoogle error', error);
+      setIsContinuingGoogle(false);
+      // console.log('\n\nonContinueWithGoogle error', error);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         return toastMessage.error({
           title: 'Google sign in error',
@@ -125,8 +112,6 @@ export default function SocialAuthButton(props: Props) {
           message: `Sign in failed`,
         });
       }
-    } finally {
-      setIsContinuingGoogle(false);
     }
   };
 

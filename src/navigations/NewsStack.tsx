@@ -133,7 +133,7 @@ export default function NewsStack() {
               >
                 <CustomFastImage
                   imageUri={
-                    authenticationStore?.user?.photoURL ??
+                    authenticationStore?.user?.providerData?.[0]?.photoURL ??
                     authenticationStore.bio?.photoUrl
                   }
                   style={{ aspectRatio: 1 }}
@@ -161,7 +161,7 @@ export default function NewsStack() {
               >
                 <CustomFastImage
                   imageUri={
-                    authenticationStore?.user?.photoURL ??
+                    authenticationStore?.user?.providerData?.[0]?.photoURL ??
                     authenticationStore.bio?.photoUrl
                   }
                   style={{ aspectRatio: 1 }}

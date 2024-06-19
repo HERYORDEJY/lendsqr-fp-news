@@ -55,7 +55,6 @@ export default function PhoneInput(props: Props) {
   const onChangeText = (text: string) => {
     setValue(text);
     props.onChangeText?.(text);
-    console.log('text', text);
   };
 
   const onFocus = () => {

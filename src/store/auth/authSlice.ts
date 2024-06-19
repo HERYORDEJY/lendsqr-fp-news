@@ -15,7 +15,6 @@ export const authStoreSlice = createSlice({
   initialState: authStoreInitialState,
   reducers: {
     setState: (state, action: PayloadAction<AuthStoreInitialStateType>) => {
-      console.log('action.payload', action.payload);
       return Object.assign(state, {
         ...action?.payload,
       });
