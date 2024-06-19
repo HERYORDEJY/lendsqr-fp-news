@@ -77,7 +77,7 @@ const Component = ({ news, ...props }: Props) => {
   );
 };
 
-const NewsTopHeadlineItem = Component; // React.memo(Component);
+const NewsTopHeadlineItem = React.memo(Component);
 export default NewsTopHeadlineItem;
 
 const styles = StyleSheet.create({

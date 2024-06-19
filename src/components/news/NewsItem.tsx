@@ -90,7 +90,7 @@ const Component = ({ news, ...props }: Props) => {
   );
 };
 
-const NewsItem = Component; // React.memo(Component);
+const NewsItem = React.memo(Component);
 export default NewsItem;
 
 const styles = StyleSheet.create({
