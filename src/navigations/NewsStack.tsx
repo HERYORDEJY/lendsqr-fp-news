@@ -38,16 +38,22 @@ export default function NewsStack() {
     >();
 
   const onAddBookmarkToFirebase = async (url: string) => {
-    const docRef = firestore()
-      .collection('bookmarkedNews')
-      .doc(authenticationStore.user?.uid);
-
     try {
-      await docRef
-        .update({
-          urls: firestore.FieldValue.arrayUnion(url),
-        })
-        .then(() => appDispatch(addBookmarkAction(url)));
+      const docRef = firestore()
+        .collection('bookmarkedNews')
+        .doc(authenticationStore.user?.uid);
+
+      if ((await docRef.get()).exists) {
+        await docRef
+          .update({
+            urls: firestore.FieldValue.arrayUnion(url),
+          })
+          .then(() => appDispatch(addBookmarkAction(url)));
+      } else {
+        docRef
+          .set({ urls: [url] })
+          .then(() => appDispatch(addBookmarkAction(url)));
+      }
       toastMessage.success({ message: 'News bookmarked successfully' });
     } catch (error) {
       toastMessage.error({ message: `Unable to bookmark news:', ${error}` });
@@ -55,11 +61,11 @@ export default function NewsStack() {
   };
 
   const onRemoveBookmarkFromFirebase = async (urlToRemove: string) => {
-    const docRef = firestore()
-      .collection('bookmarkedNews')
-      .doc(authenticationStore.user?.uid);
-
     try {
+      const docRef = firestore()
+        .collection('bookmarkedNews')
+        .doc(authenticationStore.user?.uid);
+
       const doc = await docRef.get();
       let urls = doc.data()?.urls;
       urls = urls?.filter?.((url: string) => url !== urlToRemove);

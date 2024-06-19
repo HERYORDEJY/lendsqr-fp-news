@@ -1,20 +1,36 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# LendsqrFpNews
 
-# Getting Started
+### This is a React Native Developer Assessment app, from [LendsqrFpNews](https://docs.google.com/document/d/e/2PACX-1vT0icxfibgjWxBZezHgGFhwVSZj1-3S8ewFZ5g0FgC_N1nA4QeXXLV_Nix4JfB6Ap3BX4BDHmwZWRnU/pub)
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+Built using using the (bare) [`React Native CLI`](https://github.com/react-native-community/cli).
 
-## Step 1: Start the Metro Server
+> **Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+## Step 1: Installation
 
-To start Metro, run the following command from the _root_ of your React Native project:
+Clone the repo on a local directory.
 
 ```bash
-# using npm
-npm start
+git clone git@github.com:HERYORDEJY-DEV/LendsqrFpNews.git
+```
 
-# OR using Yarn
+Install dependencies, run the following command from the _root_ of the cloned project:
+
+- with _yarn_
+
+```bash
+yarn install
+```
+
+- with _npm_
+
+```bash
+yarn install
+```
+
+Then start Metro,
+
+```bash
 yarn start
 ```
 
@@ -25,55 +41,103 @@ Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _roo
 ### For Android
 
 ```bash
-# using npm
-npm run android
-
-# OR using Yarn
 yarn android
 ```
 
 ### For iOS
 
 ```bash
-# using npm
-npm run ios
+# to install pods (cocoapods)
+npx pod-install
+```
 
-# OR using Yarn
+- with Xcode
+
+  - open the ios directory of the app in the (new) terminal, i.e. `cd ios`
+  - enter the command `xed .` to open Xcode directly for the app
+  - at the top bar of the Xcode environment, select your destination simulator (or device) for build and the press the _play_ button by the left side of the top-menu bar
+
+- with terminal
+
+```bash
 yarn ios
 ```
 
 If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+## Project Structure
 
-## Step 3: Modifying your App
+- src
+  - |--- assets
+    - |--- fonts
+    - |--- images
+    - |--- svgs
+  - |--- contextAPI
+  - |--- screens
+  - |--- navigation
+  - |--- components
+  - |--- hooks
+  - |--- utils
+  - |--- styles
 
-Now that you have successfully run the app, let's modify it.
+## Screens
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+### Authentication Screens
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+- Login Screen
+- Sign Up
+  - Bio update
+  - Google sign up
 
-## Congratulations! :tada:
+### Main Screens
 
-You've successfully run and modified your React Native App. :partying_face:
+- News List
+- News Details
+- Bookmarked News List
+- Profile
 
-### Now what?
+## Features
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+- Bookmark News
+- Light & Dark Theme switch
 
-# Troubleshooting
+## Screenshots
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+### iOS
 
-# Learn More
+| ![Screenshot Android 1](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/ios-1.1.png?raw=true) |   ![Screenshot Android 2](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/ios-1.2.png?raw=true)   |
+| :---------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------: |
+|                                               _iOS - Login screen_                                                |                                                _iOS - Sign up screen_                                                 |
+| ![Screenshot Android 3](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/ios-1.3.png?raw=true) |   ![Screenshot Android 4](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/ios-2.1.png?raw=true)   |
+|   :-----------------------------------------------------------------------------------------------------------:   | :-------------------------------------------------------------------------------------------------------------------: |
+|                                          _iOS - Sign up (google) screen_                                          |                                               _iOS - News List screen_                                                |
+| ![Screenshot Android 5](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/ios-2.2.png?raw=true) |   ![Screenshot Android 6](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/ios-2.3.png?raw=true)   |
+|   :-----------------------------------------------------------------------------------------------------------:   | :-------------------------------------------------------------------------------------------------------------------: |
+|                                            _iOS - News Details screen_                                            |                                      _iOS - Bookmarked News List (empty) screen_                                      |
+| ![Screenshot Android 7](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/ios-2.4.png?raw=true) |    ![Screenshot Android 8](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/ios-3.png?raw=true)    |
+|   :-----------------------------------------------------------------------------------------------------------:   | :-------------------------------------------------------------------------------------------------------------------: |
+|                                        _iOS - Bookmarked News List screen_                                        |                                                _iOS - Profile screen_                                                 |
 
-To learn more about React Native, take a look at the following resources:
+### Android
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+| ![Screenshot Android 1](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/android-1.0.png?raw=true) | ![Screenshot Android 2](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/android-1.2.png?raw=true) |
+| :-------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------: |
+|                                               _Android - Splash screen_                                               |                                               _Android - Login screen_                                                |
+| ![Screenshot Android 3](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/android-1.3.png?raw=true) | ![Screenshot Android 4](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/android-1.4.png?raw=true) |
+|     :-----------------------------------------------------------------------------------------------------------:     | :-------------------------------------------------------------------------------------------------------------------: |
+|                                              _Android - Sign up screen_                                               |                                          _Android - Sign up (google) screen_                                          |
+| ![Screenshot Android 5](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/android-2.0.png?raw=true) | ![Screenshot Android 6](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/android-2.1.png?raw=true) |
+|     :-----------------------------------------------------------------------------------------------------------:     | :-------------------------------------------------------------------------------------------------------------------: |
+|                                             _Android - News List screen_                                              |                                            _Android - News Details screen_                                            |
+| ![Screenshot Android 7](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/android-2.3.png?raw=true) | ![Screenshot Android 8](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/android-2.4.png?raw=true) |
+|     :-----------------------------------------------------------------------------------------------------------:     | :-------------------------------------------------------------------------------------------------------------------: |
+|                                    _Android - Bookmarked News List (empty) screen_                                    |                                     _Android - News Details (bookmarked) screen_                                      |
+| ![Screenshot Android 9](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/android-2.5.png?raw=true) | ![Screenshot Android 10](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/android-3.png?raw=true)  |
+|     :-----------------------------------------------------------------------------------------------------------:     | :-------------------------------------------------------------------------------------------------------------------: |
+|                                        _Android - Bookmarked News List screen_                                        |                                              _Android - Profile screen_                                               |
+
+### others
+
+| ![Screenshot Error](https://github.com/HERYORDEJY/lendsqr-fp-news/blob/main/screenshots/error.png?raw=true) |
+| :---------------------------------------------------------------------------------------------------------: |
+|                                               _Error screen_                                                |

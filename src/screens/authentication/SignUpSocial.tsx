@@ -111,7 +111,13 @@ export default function SignUpSocial() {
         photoURL: photoUrl,
       });
 
-      await firestore().collection('users').doc(user.uid).set({
+      const docRef = await firestore().collection('users').doc(user.uid);
+      if ((await docRef.get()).exists) {
+        navigation.navigate('Login');
+        toastMessage.info({ message: 'User already exists' });
+        return;
+      }
+      docRef.set({
         fullName: form.fullName,
         phoneNumber: form.phoneNumber,
         emailAddress: form.email,
