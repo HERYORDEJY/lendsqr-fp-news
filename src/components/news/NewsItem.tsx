@@ -21,7 +21,7 @@ import NewsAuthorIcon from '../svgs/NewsAuthorIcon';
 interface Props extends TouchableOpacityProps {
   news: NewsArticleDataType;
   index: number;
-  // containerStyles: TouchableOpacityProps['style'];
+  containerStyles: TouchableOpacityProps['style'];
 }
 
 const Component = ({ news, ...props }: Props) => {
@@ -33,6 +33,7 @@ const Component = ({ news, ...props }: Props) => {
 
   return (
     <TouchableOpacity
+      testID={`news-item-${news.title}`}
       style={[
         styles.container,
         { backgroundColor: card.background },
@@ -66,7 +67,6 @@ const Component = ({ news, ...props }: Props) => {
             </Text>
           </View>
         </View>
-        {/* <View style={[styles.titleWrapper]}> */}
         <Text style={styles.title} numberOfLines={3}>
           {news.title}
         </Text>
@@ -84,7 +84,6 @@ const Component = ({ news, ...props }: Props) => {
             {news.author}
           </Text>
         </View>
-        {/* </View> */}
       </View>
     </TouchableOpacity>
   );

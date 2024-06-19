@@ -8,7 +8,7 @@ export interface NewsArticleDataType {
   author: string;
   content: string;
   description: string;
-  publishedAt: Date;
+  publishedAt: Date | string;
   source: {
     id: string | null;
     name: string;

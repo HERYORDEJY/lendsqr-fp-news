@@ -79,7 +79,6 @@ export default function RootNavigation() {
       backgroundColor: 'transparent',
       color: input.textColor,
     },
-    // placeholderTextColor: globalStyles.colors.colorsGrayGray50,
     underlineColorAndroid: 'transparent',
     allowFontScaling: false,
     cursorColor: input.cursorColor,

@@ -28,10 +28,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-// const l = {
-//     sectionDivider: '#EAEAEA',
-//   },
-//   d = {
-//     sectionDivider: '#98A2B3',
-//   };

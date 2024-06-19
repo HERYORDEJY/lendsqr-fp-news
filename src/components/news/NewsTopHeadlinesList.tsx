@@ -65,6 +65,7 @@ export default function NewsTopHeadlinesList(props: Props) {
   return (
     <>
       <FlashList
+        testID="news-top-headlines-list"
         contentInsetAdjustmentBehavior="automatic"
         horizontal={true}
         data={newsStore.topHeadlines}

@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { LOGOUT } from '../actions';
 import { NewsArticleDataType, NewsState } from './types';
 
-const initialNewsState: NewsState = {
+export const initialNewsState: NewsState = {
   everything: null,
   topHeadlines: null,
   bookmarkedNews: null,

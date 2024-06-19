@@ -34,6 +34,7 @@ const Component = ({ news, ...props }: Props) => {
 
   return (
     <TouchableOpacity
+      testID={`news-top-headline-item-${news.title}`}
       onPress={() =>
         navigation.navigate('NewsDetails', { news: JSON.stringify(news) })
       }
@@ -49,7 +50,6 @@ const Component = ({ news, ...props }: Props) => {
         style={[
           styles.imageWrapper,
           {
-            // height: windowDimensions.width * 0.4,
             height: verticalScale(150),
           },
         ]}
