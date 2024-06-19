@@ -1,13 +1,14 @@
-import appleAuth from '@invertase/react-native-apple-authentication';
+import { firebase } from '@react-native-firebase/auth';
 import { NavigationContainer } from '@react-navigation/native';
-import React, { useEffect } from 'react';
-import { ScrollView, Text, TextInput } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Image, ScrollView, Text, TextInput, View } from 'react-native';
 import BootSplash from 'react-native-bootsplash';
 import setDefaultProps from 'react-native-simple-default-props';
+import CustomScreenContainer from '~/components/general/CustomScreenContainer';
 import { useThemeColors } from '~/hooks/useThemeColors';
 import { useAppDispatch, useAppSelector } from '~/store';
+import { setAuthStoreStateAction } from '~/store/auth/authSlice';
 import { appFontFamily } from '~/styles/fonts';
-import { isAndroidDevice } from '~/utils/device';
 import AuthenticationStack from './AuthenticationStack';
 import NewsStack from './NewsStack';
 
@@ -15,6 +16,44 @@ export default function RootNavigation() {
   const authSelector = useAppSelector(state => state.authentication);
   const appDispatch = useAppDispatch();
   const { text, input } = useThemeColors();
+  const [initializing, setInitializing] = useState(true);
+
+  const onAuthStateChanged = (user: any) => {
+    if (user) {
+      appDispatch(
+        setAuthStoreStateAction(
+          user
+            ? {
+                user: {
+                  displayName: user.displayName,
+                  multiFactor: user.multiFactor!,
+                  isAnonymous: user.isAnonymous,
+                  emailVerified: user.emailVerified,
+                  providerData: user.providerData,
+                  uid: user.uid,
+                  email: user.email,
+                  phoneNumber: user.phoneNumber,
+                  photoURL: user.photoURL,
+                  metadata: user.metadata,
+                  providerId: user.providerId,
+                  // refreshToken: user.refreshToken,
+                  tenantId: user.tenantId,
+                },
+                isLoggedIn: true,
+              }
+            : { user: null, isLoggedIn: false },
+        ),
+      );
+    }
+
+    if (initializing) {
+      setInitializing(false), 4321;
+    }
+  };
+
+  const onAppReady = () => {
+    if (!initializing) BootSplash.hide();
+  };
 
   setDefaultProps(Text, {
     style: {
@@ -48,23 +87,30 @@ export default function RootNavigation() {
   });
 
   useEffect(() => {
-    // onCredentialRevoked returns a function that will remove the event listener. useEffect will call this function when the component unmounts
-    return () => {
-      if (isAndroidDevice) {
-        return;
-      }
-      appleAuth.onCredentialRevoked(async () => {
-        appDispatch({ type: 'LOGOUT' });
-      });
-    };
-  }, []); //
+    const subscriber = firebase.auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
+  if (initializing)
+    return (
+      <CustomScreenContainer
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#FFF',
+        }}
+      >
+        <View style={{ height: 100, width: 100 }}>
+          <Image
+            source={require('../assets/images/news-logo.png')}
+            style={{ flex: 1, width: undefined, height: undefined }}
+          />
+        </View>
+      </CustomScreenContainer>
+    );
 
   return (
-    <NavigationContainer
-      onReady={() => {
-        BootSplash.hide();
-      }}
-    >
+    <NavigationContainer onReady={onAppReady}>
       {authSelector.isLoggedIn && authSelector.user?.uid ? (
         <NewsStack />
       ) : (

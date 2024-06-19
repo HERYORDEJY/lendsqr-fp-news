@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+
 <!--
    AppCenter-Config.plist
    LendsqrFpNews
@@ -10,6 +11,6 @@
 <plist version="1.0">
     <dict>
     <key>AppSecret</key>
-    <string>{Your app secret here}</string>
+    <string>9c37457c-64f6-4c5f-b14c-22f26545a2d1</string>
     </dict>
 </plist>

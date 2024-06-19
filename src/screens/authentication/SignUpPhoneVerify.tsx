@@ -1,11 +1,13 @@
 import { yupResolver } from '@hookform/resolvers/yup';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import {
   NavigationProp,
   RouteProp,
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   Alert,
@@ -17,30 +19,28 @@ import {
   Text,
   View,
 } from 'react-native';
-import ActionSheet, { ActionSheetRef } from 'react-native-actions-sheet';
 import AuthScreenHeader from '~/components/authententication/AuthScreenHeader';
 import PrimaryButton from '~/components/buttons/PrimaryButtom';
-import CustomActionSheetContainer from '~/components/general/CustomActionSheetContainer';
 import CustomScreenContainer from '~/components/general/CustomScreenContainer';
 import EmailInput from '~/components/inputs/EmailInput';
 import PasswordInput from '~/components/inputs/PasswordInput';
-import PhoneInput from '~/components/inputs/PhoneInput';
 import CustomTextInput from '~/components/inputs/TextInput';
 import UserIcon from '~/components/svgs/UserIcon';
 import { useThemeColors } from '~/hooks/useThemeColors';
 import { useToastMessage } from '~/hooks/useToastMessage';
 import { AuthenticationStackParamList } from '~/navigations/types';
 import { useAppDispatch } from '~/store';
+import { setAuthStoreStateAction } from '~/store/auth/authSlice';
 import { appFontFamily } from '~/styles/fonts';
 import { isAndroidDevice } from '~/utils/device';
+import { generateRandomHex } from '~/utils/generate';
 import {
   sendVerificationCode,
   updatePhoneNumber,
 } from '~/utils/phone-number-service';
 import { signUpSchema } from '~/utils/yup-schema';
 
-export default function SignUp() {
-  const phoneVerifySheetRef = useRef<ActionSheetRef | null>(null);
+export default function SignUpPhoneVerify() {
   const { text } = useThemeColors();
   const appDispatch = useAppDispatch();
   const { button, input } = useThemeColors();
@@ -48,9 +48,6 @@ export default function SignUp() {
     useNavigation<NavigationProp<AuthenticationStackParamList, 'SignUpBio'>>();
   const [verificationCode, setVerificationCode] = useState('');
   const [verificationId, setVerificationId] = useState('');
-  const [verificationCodeError, setVerificationCodeError] = useState(null);
-  const [isRequestingCode, setIsRequestingCode] = useState(false);
-  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
 
   const route =
     useRoute<RouteProp<AuthenticationStackParamList, 'SignUpBio'>>();
@@ -70,26 +67,20 @@ export default function SignUp() {
     formValues = formMethods.getValues(),
     formErrors = formMethods.formState.errors;
 
-  const onRequestPhoneVerificationCode = async (values: typeof formValues) => {
-    setIsRequestingCode(true);
-    const phoneNumber = values.phoneNumber;
+  const handleSendCode = async () => {
+    const phoneNumber = formValues.phoneNumber;
+
     try {
       const confirmation = await sendVerificationCode(phoneNumber);
       setVerificationId(confirmation.verificationId);
-      toastMessage.success({
-        message: `Verification code sent to ${phoneNumber}`,
-      });
-      phoneVerifySheetRef.current?.show();
-      setIsRequestingCode(false);
+      Alert.alert('Verification code sent to ' + phoneNumber);
     } catch (error) {
       console.error('Failed to send verification code:', error);
       toastMessage.error({ message: 'Failed to send verification code.' });
-      setIsRequestingCode(false);
     }
   };
 
-  const onVerifyPhoneCode = async () => {
-    setIsVerifyingCode(true);
+  const handleVerifyCode = async () => {
     const phoneNumber = formValues.phoneNumber;
     if (verificationId) {
       try {
@@ -97,20 +88,78 @@ export default function SignUp() {
         toastMessage.success({
           message: 'Phone number verified successfully!',
         });
-        phoneVerifySheetRef.current?.hide();
-        setIsVerifyingCode(false);
-        navigation.navigate('SignUpSocial', {
-          form: JSON.stringify(formValues),
-        });
       } catch (error) {
         console.error('Failed to verify code:', error);
         toastMessage.error({ message: 'Failed to verify code.' });
-        setIsVerifyingCode(false);
       }
     } else {
       Alert.alert('Error', 'Please request a verification code first.');
     }
   };
+
+  async function signUpWithEmail(values: typeof formValues) {
+    setLoading(true);
+    try {
+      // Create user with email and password
+      const userCredential = await auth().createUserWithEmailAndPassword(
+        values.email,
+        values.password!,
+      );
+      const user = userCredential.user;
+      const photoUrl = `https://gravatar.com/avatar/${generateRandomHex()}?s=400&d=robohash&r=x`;
+
+      // Update user profile with additional info
+      await userCredential.user.updateProfile({
+        displayName: values.fullName,
+        photoURL: photoUrl,
+      });
+
+      await firestore()
+        .collection('users')
+        .doc(user.uid)
+        .set({
+          fullName: values.fullName,
+          phoneNumber: values.phoneNumber,
+          emailAddress: values.email,
+          photoUrl,
+        })
+        .then(console.log);
+
+      appDispatch(
+        setAuthStoreStateAction({
+          user: {
+            displayName: user.displayName,
+            multiFactor: user.multiFactor!,
+            isAnonymous: user.isAnonymous,
+            emailVerified: user.emailVerified,
+            providerData: user.providerData,
+            uid: user.uid,
+            email: values.email,
+            phoneNumber: user.phoneNumber,
+            photoURL: user.photoURL,
+            metadata: user.metadata,
+            providerId: user.providerId,
+          },
+          bio: {
+            fullName: values.fullName,
+            phoneNumber: values.phoneNumber,
+            emailAddress: values.email,
+            photoUrl,
+          },
+          isLoggedIn: true,
+        }),
+      );
+
+      toastMessage.success({ message: 'Account created successfully' });
+
+      setLoading(false);
+    } catch (error: any) {
+      toastMessage.error({ message: error.message ?? JSON.stringify(error) });
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <KeyboardAvoidingView
@@ -156,16 +205,17 @@ export default function SignUp() {
                 name={'email'}
                 control={formMethods.control}
               />
-              {/* <PhoneInput label="Phone" /> */}
+              {/* TODO: crate a phone number input */}
               <Controller
                 render={({ field }) => {
                   return (
-                    <PhoneInput
+                    <CustomTextInput
                       label="Phone Number"
                       onChangeText={field.onChange}
                       errorMessage={formErrors.phoneNumber?.message}
                       value={field.value}
                       placeholder="Enter your phone number"
+                      leftElement={<UserIcon color={input.iconColor} />}
                     />
                   );
                 }}
@@ -205,12 +255,9 @@ export default function SignUp() {
 
             <View>
               <PrimaryButton
-                isLoading={isRequestingCode}
-                title="Continue"
-                // onPress={formMethods.handleSubmit(
-                //   onRequestPhoneVerificationCode,
-                // )}
-                onPress={() => phoneVerifySheetRef.current?.show()}
+                animating={loading}
+                title="Sign Up"
+                onPress={formMethods.handleSubmit(signUpWithEmail)}
                 // disabled={loading || !formMethods.formState.isValid}
               />
             </View>
@@ -241,37 +288,6 @@ export default function SignUp() {
           </Text>
         </Pressable>
       </CustomScreenContainer>
-      <ActionSheet ref={phoneVerifySheetRef}>
-        <CustomActionSheetContainer
-          sheetRef={phoneVerifySheetRef}
-          title="Phone Number Verification"
-          containerStyle={{ rowGap: 32 }}
-        >
-          <ScrollView style={styles.phoneVerifContainer}>
-            <AuthScreenHeader
-              title="Phone Verification"
-              description=" Please the code sent to the provided phone number."
-            />
-            <View style={[styles.form, { marginVertical: 32 }]}>
-              <PasswordInput
-                label="Phone Verification code"
-                onChangeText={setVerificationCode}
-                errorMessage={verificationCodeError}
-                value={verificationCode}
-                placeholder="Enter your verification code here."
-                maxLength={6}
-              />
-            </View>
-          </ScrollView>
-          <PrimaryButton
-            disabled={verificationCode.length !== 6}
-            isLoading={isRequestingCode}
-            title="Submit"
-            onPress={onVerifyPhoneCode}
-            containerStyle={{ marginHorizontal: 20 }}
-          />
-        </CustomActionSheetContainer>
-      </ActionSheet>
     </KeyboardAvoidingView>
   );
 }
@@ -305,7 +321,36 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dontText: { fontSize: 16 },
-  phoneVerifContainer: {
-    padding: 20,
-  },
 });
+
+const _ = {
+  additionalUserInfo: {
+    profile: null,
+    username: null,
+    providerId: 'password',
+    isNewUser: false,
+  },
+  user: {
+    displayName: 'Ayodeji Yusuf',
+    multiFactor: { enrolledFactors: [] },
+    isAnonymous: false,
+    emailVerified: false,
+    providerData: [
+      {
+        email: 'heryordejy.dev@gmail.com',
+        providerId: 'password',
+        uid: 'heryordejy.dev@gmail.com',
+        displayName: 'Ayodeji Yusuf',
+      },
+    ],
+    uid: '11OLdWdzHjRId7a3iFw3IQmFAuQ2',
+    email: 'heryordejy.dev@gmail.com',
+    refreshToken:
+      'AMf-vBzgd4DyNMoCDF5u6gbZu6KKsLY_ctSKR-Z7_6q2uG8RtHstfo2Aihvyt9MURJHvwpEVPxuRXfKQMbr45eNSK6RGMIFV60bh_Y39Ztclt2D_f0_-LNtPtcgW38WwOCIrQnRUSKhkQZsesCxe3uvZA1tNg86i-erglokc2otkXCGWlPgNBohlMvdWPhQmTyIseRU_xjKjczUn2VZx_cInXAoVrHzHJH0zo_emyg4WTJE-mpwqiH-RyO1O485X-0JCC3HUVbTdov1DlsEyMDJipEtyS3MEDQ',
+    tenantId: null,
+    phoneNumber: null,
+    photoURL: null,
+    metadata: { creationTime: 1718353788529, lastSignInTime: 1718353788529 },
+    providerId: 'firebase',
+  },
+};

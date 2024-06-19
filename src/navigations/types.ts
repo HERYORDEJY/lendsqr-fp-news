@@ -8,7 +8,7 @@ type RootStackParamList = {
 export type AuthenticationStackParamList = {
   Login: undefined;
   SignUpBio: undefined;
-  SignUpSocial: undefined;
+  SignUpSocial: { form: string };
 };
 
 export type NewsStackParamList = {

@@ -5,65 +5,86 @@
  * @format
  */
 
-import type { PropsWithChildren } from 'react';
-import React from 'react';
-import { StyleSheet, Text, useColorScheme, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Platform, StyleSheet } from 'react-native';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import CodePush from 'react-native-code-push';
+import Config from 'react-native-config';
 import Toast from 'react-native-toast-message';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import CustomErrorBoundary from '~/components/general/CustomErrorBoundary';
 import { toastMessageConfig } from '~/hooks/useToastMessage';
 import RootNavigation from '~/navigations';
 import store, { persistor } from '~/store';
 
 const queryClient = new QueryClient();
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const appcenterCodepushDeploymentKey = () => {
+  switch (true) {
+    case __DEV__ && Platform.OS === 'android':
+      return Config.LendsqrFpNews_ANDROID_APPCENTER_CODEPUSH_DEPLOYMENT_STAGING_KEY;
 
-function Section({ children, title }: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}
-      >
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}
-      >
-        {children}
-      </Text>
-    </View>
-  );
-}
+    case !__DEV__ && Platform.OS === 'android':
+      return Config.LendsqrFpNews_ANDROID_APPCENTER_CODEPUSH_DEPLOYMENT_PRODUCTION_KEY;
+
+    case __DEV__ && Platform.OS === 'ios':
+      return Config.LendsqrFpNews_IOS_APPCENTER_CODEPUSH_DEPLOYMENT_STAGING_KEY;
+
+    case !__DEV__ && Platform.OS === 'ios':
+      return Config.LendsqrFpNews_IOS_APPCENTER_CODEPUSH_DEPLOYMENT_PRODUCTION_KEY;
+
+    default:
+      return undefined;
+  }
+};
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const [updateInfo, setUpdateInfo] = useState(null);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  useEffect(() => {
+    CodePush.sync(
+      {
+        deploymentKey: appcenterCodepushDeploymentKey(),
+        updateDialog: true,
+        installMode: CodePush.InstallMode.IMMEDIATE,
+        //  checkFrequency: CodePush.CheckFrequency.ON_APP_START,
+      },
+      status => {
+        switch (status) {
+          case CodePush.SyncStatus.CHECKING_FOR_UPDATE:
+            console.log('Checking for updates.');
+            break;
+          case CodePush.SyncStatus.DOWNLOADING_PACKAGE:
+            console.log('Downloading package.');
+            break;
+          case CodePush.SyncStatus.INSTALLING_UPDATE:
+            console.log('Installing update.');
+            break;
+          case CodePush.SyncStatus.UP_TO_DATE:
+            console.log('Up-to-date.');
+            break;
+          case CodePush.SyncStatus.UPDATE_INSTALLED:
+            console.log('Update installed.');
+            break;
+        }
+      },
+      progress => {
+        console.log(
+          `Downloaded ${progress.receivedBytes} of ${progress.totalBytes} bytes.`,
+        );
+      },
+    );
+  }, []);
 
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <QueryClientProvider client={queryClient}>
-          <RootNavigation />
+          <CustomErrorBoundary>
+            <RootNavigation />
+          </CustomErrorBoundary>
         </QueryClientProvider>
         {/* @ts-ignore */}
         <Toast config={toastMessageConfig} />
@@ -71,6 +92,10 @@ function App(): React.JSX.Element {
     </Provider>
   );
 }
+
+let codePushOptions = { checkFrequency: CodePush.CheckFrequency.ON_APP_START };
+
+export default CodePush(codePushOptions)(App);
 
 const styles = StyleSheet.create({
   sectionContainer: {
@@ -90,5 +115,3 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
-
-export default App;

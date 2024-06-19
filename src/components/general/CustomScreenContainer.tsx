@@ -33,8 +33,8 @@ export default function CustomScreenContainer({
     <SafeAreaView
       style={[
         styles.container,
-        props.style,
         { backgroundColor: main?.background },
+        props.style,
       ]}
       edges={props.edges ?? edges}
     >

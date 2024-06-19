@@ -23,7 +23,7 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>CodePushDeploymentKey</key>
-	<string>"9c37457c-64f6-4c5f-b14c-22f26545a2d1"</string>
+	<string>RrT5hl6eiCCoQA8O8-Jku4wh_dm5--Gr7VHFM</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -73,6 +73,35 @@
 		<string>Montserrat-SemiBoldItalic.ttf</string>
 		<string>Montserrat-Thin.ttf</string>
 		<string>Montserrat-ThinItalic.ttf</string>
+	</array>
+	<key>CodePushPublicKey</key>
+	<string>-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA27RhMxAN6gYwnkcko8Wn
+pNWPRgNhzJOhmsyoBveiH/VhP6ZIm2Ngkce97jLAur3FWnc/eenEITGLNzEhcy4K
++FJBtfVoLNVphXPbYRuEOXkdlmLv0JYWGFr63OgvqS+RX/wX8jDzuUNPCZ62bfvl
+3n1sOMJ376LCM+ofQGkiMM589/+hpdz69ytaUTAcAZK4wHWok2adMRnLH+QmICzU
+L1W/OpO/j58MGunnB/RLTgUZj6Uz/WA5zoCll5ge89t87RYHPWX1w1fM9rsSE8h/
+v4zbDvgI0Q0jPcIE10K3xYeboAvDL9TXr3jYjesI7u6lpZLDqMJV2E9ZURiu6pfN
+cQIDAQAB
+-----END PUBLIC KEY-----</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>heryordejy.lendsqrfpnews</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.819087675772-j44p691bmingtvrhpj5evqbj2etv4s10</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

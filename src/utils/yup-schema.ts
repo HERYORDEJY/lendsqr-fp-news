@@ -1,6 +1,7 @@
 import * as yup from 'yup';
 
-const phoneNumberRegex = /^(\+?234|0)?[789]\d{9}$/; //^(\+?234|0)?[789]\d{9}$
+const nigeriaPhoneNumberRegex = /^(\+?234|0)?[789]\d{9}$/; //^(\+?234|0)?[789]\d{9}$
+const phoneNumberRegex = /^\+(?:[0-9] ?){6,14}[0-9]$/; //^(\+?234|0)?[789]\d{9}$
 const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 const passwordValidityInfo =
   'Password should be a minimum of 8 characters, contains at least on capital letter, one small letter, one number, and one special character.';
@@ -33,6 +34,7 @@ export const signUpSchema = yup.object().shape({
   phoneNumber: yup
     .string()
     .trim()
+    .min(5, 'Invalid phone number format')
     .required('Phone number is required')
     .test('password', 'Invalid phone number format', value => {
       return phoneNumberRegex.test(value);

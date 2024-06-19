@@ -2485,6 +2485,8 @@ PODS:
     - React-Core
   - RNCMaskedView (0.3.1):
     - React-Core
+  - RNCPicker (2.7.7):
+    - React-Core
   - RNFastImage (8.6.3):
     - React-Core
     - SDWebImage (~> 5.11.1)
@@ -2669,6 +2671,7 @@ DEPENDENCIES:
   - "RNAppleAuthentication (from `../node_modules/@invertase/react-native-apple-authentication`)"
   - RNBootSplash (from `../node_modules/react-native-bootsplash`)
   - "RNCMaskedView (from `../node_modules/@react-native-masked-view/masked-view`)"
+  - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
@@ -2856,6 +2859,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-bootsplash"
   RNCMaskedView:
     :path: "../node_modules/@react-native-masked-view/masked-view"
+  RNCPicker:
+    :path: "../node_modules/@react-native-picker/picker"
   RNFastImage:
     :path: "../node_modules/react-native-fast-image"
   RNFBAnalytics:
@@ -2990,6 +2995,7 @@ SPEC CHECKSUMS:
   RNAppleAuthentication: e99eaf3c4c01ad8ecb6125dd6f0cfd98871685b5
   RNBootSplash: e025d4ee98d942ee6c8b495a6fe66339a6b5f6dd
   RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
+  RNCPicker: b7873ba797dc586bfaf3307d737cbdc620a9ff3e
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNFBAnalytics: 8627f985ae808ada706074c9f1bc4633da7a4f2c
   RNFBApp: 9acbe359ef3559d6f8ca5c350db471f2b352f98a

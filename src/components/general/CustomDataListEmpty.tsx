@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useAppSelector } from '~/store';
+import { appFontFamily } from '~/styles/fonts';
 import CautionIndicator from '../svgs/CautionIndicator';
 
 interface Props {
@@ -17,20 +18,25 @@ function Componentt({
   const themeSelector = useAppSelector(state => state.theme);
 
   return (
-    <View style={[styles.orderEmptyWrapper]}>
+    <View
+      style={[
+        styles.orderEmptyWrapper,
+        { backgroundColor: themeSelector.colors.main.background },
+      ]}
+    >
       <View style={styles.orderEmptyIconWrapper}>
         {props.icon ? props.icon : <CautionIndicator />}
       </View>
       <View style={styles.bodyWrapper}>
         <Text
-          style={[styles.title, { color: themeSelector.colors.textPrimary }]}
+          style={[styles.title, { color: themeSelector.colors.text.primary }]}
         >
           {title}
         </Text>
         <Text
           style={[
             styles.description,
-            { color: themeSelector.colors.textSecondary },
+            { color: themeSelector.colors.text.secondary },
           ]}
         >
           {description}
@@ -57,7 +63,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontFamily: 'montserratSemibold',
+    fontFamily: appFontFamily.semiBold,
     fontSize: 16,
     textTransform: 'capitalize',
   },

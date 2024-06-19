@@ -75,18 +75,15 @@ export default function NewsListing() {
 
   const renderListItem: ListRenderItem<NewsArticleDataType> = useCallback(
     ({ item, index }) => {
-      // @ts-ignore
+      if (!Boolean(item?.url)) {
+        return null;
+      }
       return <NewsItem news={item} index={index} />;
     },
     [],
   );
 
   const renderListHeader = useCallback(() => {
-    if (!isLoadingNews && isDataEmpty(newsStore.topHeadlines)) {
-      return null;
-    }
-
-    // @ts-ignore
     return (
       <View style={{ rowGap: 24 }}>
         <View style={styles.topWrapper}>

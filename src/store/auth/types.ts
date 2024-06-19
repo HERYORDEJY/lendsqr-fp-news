@@ -27,28 +27,24 @@ export interface AuthAdditionalUserInfo {
   isNewUser: boolean;
 }
 
-export type AuthUserType = {
-  displayName: string | null;
-  multiFactor: {
-    enrolledFactors: Array<any>;
-  };
-  isAnonymous: boolean;
-  emailVerified: boolean;
-  providerData?:
-    | FirebaseAuthTypes.UserInfo[]
-    | Array<{
-        providerId: string;
-        uid: string;
-        email: string;
-      }>;
-  uid: string;
-  email: string;
-  refreshToken?: string;
+export interface AuthUserType extends Partial<FirebaseAuthTypes.User> {
+  refreshToken?: string | null;
   tenantId?: string | null;
-  phoneNumber: string | null;
-  photoURL: string | null;
-  metadata?:
-    | FirebaseAuthTypes.UserMetadata
-    | { creationTime: number; lastSignInTime: number };
-  providerId: string;
-};
+}
+
+export interface Profile {
+  at_hash: string;
+  iat: number;
+  email: string;
+  exp: number;
+  azp: string;
+  nonce: string;
+  picture: string;
+  name: string;
+  email_verified: boolean;
+  aud: string;
+  family_name: string;
+  iss: string;
+  sub: string;
+  given_name: string;
+}

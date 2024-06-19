@@ -9,6 +9,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { useThemeColors } from '~/hooks/useThemeColors';
+import { appFontFamily } from '~/styles/fonts';
 import CustomActivityIndicator from '../general/CustomActivityIndicator';
 
 interface Props extends TouchableOpacityProps {
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   title: {
-    fontFamily: 'montserratMedium',
+    fontFamily: appFontFamily.semiBold,
     fontSize: 16,
   },
 });

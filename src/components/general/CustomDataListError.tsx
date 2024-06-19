@@ -7,9 +7,10 @@ import {
   View,
 } from 'react-native';
 
-import {useAppSelector} from '~/store';
+import { useAppSelector } from '~/store';
 import ErrorIndicator from '../svgs/ErrorIndicator';
 import CustomActivityIndicator from './CustomActivityIndicator';
+import { appFontFamily } from '~/styles/fonts';
 
 interface Props {
   title?: string;
@@ -22,13 +23,18 @@ interface Props {
 function Componentt({
   title = 'Something went wrong',
   actionText = 'Unable to fetch data. Please try again',
-  refreshControl: {onRefresh, refreshing},
+  refreshControl: { onRefresh, refreshing },
   ...props
 }: Props): React.JSX.Element {
   const themeSelector = useAppSelector(state => state.theme);
 
   return (
-    <View style={[styles.orderEmptyWrapper]}>
+    <View
+      style={[
+        styles.orderEmptyWrapper,
+        { backgroundColor: themeSelector.colors.main.background },
+      ]}
+    >
       <View style={styles.orderEmptyIconWrapper}>
         {refreshing ? (
           <CustomActivityIndicator isLoading={refreshing} />
@@ -39,7 +45,9 @@ function Componentt({
         )}
       </View>
       <View style={styles.welcomeWrapper}>
-        <Text style={[styles.title, {color: themeSelector.colors.textPrimary}]}>
+        <Text
+          style={[styles.title, { color: themeSelector.colors.text.primary }]}
+        >
           {title}
         </Text>
 
@@ -47,8 +55,9 @@ function Componentt({
           <Text
             style={[
               styles.description,
-              {color: themeSelector.colors.textSecondary},
-            ]}>
+              { color: themeSelector.colors.text.secondary },
+            ]}
+          >
             {props.description}
           </Text>
         ) : null}
@@ -57,11 +66,12 @@ function Componentt({
             style={[
               styles.description,
               {
-                color: themeSelector.colors.textSecondary,
-                textDecorationColor: themeSelector.colors.textSecondary,
+                color: themeSelector.colors.text.secondary,
+                textDecorationColor: themeSelector.colors.text.secondary,
                 textDecorationLine: 'underline',
               },
-            ]}>
+            ]}
+          >
             {actionText}
           </Text>
         </TouchableOpacity>
@@ -88,7 +98,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontFamily: 'montserratSemibold',
+    fontFamily: appFontFamily.semiBold,
     fontSize: 16,
     textTransform: 'capitalize',
   },

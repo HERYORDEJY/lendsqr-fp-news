@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import FastImage, { FastImageProps } from 'react-native-fast-image';
 
 interface Props extends FastImageProps {
-  imageUri: string;
+  imageUri?: string;
 }
 
 export default function CustomFastImage(props: Props) {

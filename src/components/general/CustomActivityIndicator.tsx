@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import { useAppSelector } from '~/store';
+import { appFontFamily } from '~/styles/fonts';
 
 interface Props extends ActivityIndicatorProps {
   isLoading?: boolean;
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontFamily: 'montserratSemibold',
+    fontFamily: appFontFamily.semiBold,
     fontSize: 16,
     textTransform: 'capitalize',
   },

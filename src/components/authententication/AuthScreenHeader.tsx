@@ -36,8 +36,6 @@ const styles = StyleSheet.create({
     marginBottom: 7,
   },
   pageHeaderSubtitle: {
-    // fontSize: 40,
-    // fontFamily:  'montserratBold',
     textAlign: 'center',
   },
 });

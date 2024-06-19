@@ -9,6 +9,7 @@ import CustomFastImage from '~/components/general/CustomFastImage';
 import BookmarkCircledIcon from '~/components/svgs/BookmarkCircledIcon';
 import BookmarkFilledIcon from '~/components/svgs/BookmarkFilledIcon';
 import BookmarkOutlinedIcon from '~/components/svgs/BookmarkOutlinedIcon';
+import CrashIcon from '~/components/svgs/CrashIcon';
 import { useThemeColors } from '~/hooks/useThemeColors';
 import { useToastMessage } from '~/hooks/useToastMessage';
 import BookmarkedNewsListing from '~/screens/news/BookmarkedNewsListing';
@@ -72,6 +73,10 @@ export default function NewsStack() {
     }
   };
 
+  const onThrowError = () => {
+    throw new Error('This is a test runtime error');
+  };
+
   return (
     <Navigator
       initialRouteName="NewsListing"
@@ -97,12 +102,20 @@ export default function NewsStack() {
           headerLargeTitle: true,
           headerRight(props) {
             return (
-              <TouchableOpacity
-                style={styles.bookmarkButton}
-                onPress={() => navigation.navigate('BookmarkedNewsListing')}
-              >
-                <BookmarkCircledIcon color={colors.colorFromLogo.brown} />
-              </TouchableOpacity>
+              <View style={[styles.itemRow, { rowGap: 12 }]}>
+                <TouchableOpacity
+                  style={[styles.bookmarkButton]}
+                  onPress={() => navigation.navigate('BookmarkedNewsListing')}
+                >
+                  <BookmarkCircledIcon color={colors.colorFromLogo.brown} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.bookmarkButton, { alignItems: 'flex-end' }]}
+                  onPress={onThrowError}
+                >
+                  <CrashIcon />
+                </TouchableOpacity>
+              </View>
             );
           },
           headerLeft(props) {
@@ -119,7 +132,10 @@ export default function NewsStack() {
                 onPress={() => navigation.navigate('Profile')}
               >
                 <CustomFastImage
-                  imageUri={authenticationStore.bio?.photoUrl}
+                  imageUri={
+                    authenticationStore?.user?.photoURL ??
+                    authenticationStore.bio?.photoUrl
+                  }
                   style={{ aspectRatio: 1 }}
                 />
               </TouchableOpacity>
@@ -144,7 +160,10 @@ export default function NewsStack() {
                 onPress={() => navigation.navigate('Profile')}
               >
                 <CustomFastImage
-                  imageUri={authenticationStore.bio?.photoUrl}
+                  imageUri={
+                    authenticationStore?.user?.photoURL ??
+                    authenticationStore.bio?.photoUrl
+                  }
                   style={{ aspectRatio: 1 }}
                 />
               </TouchableOpacity>
@@ -173,13 +192,6 @@ export default function NewsStack() {
               }
               await onAddBookmarkToFirebase(news.url);
             };
-
-            if (
-              route.params.isLoadingWebpage ||
-              !Boolean(newsStore.bookmarkedNews?.urls.length)
-            ) {
-              return null;
-            }
 
             return (
               <View style={styles.itemRow}>
@@ -226,5 +238,7 @@ const styles = StyleSheet.create({
   },
   itemRow: {
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

@@ -18,13 +18,14 @@ import AppleIcon from '~/components/svgs/AppleIcon';
 import GoogleIcon from '~/components/svgs/GoogleIcon';
 import { useToastMessage } from '~/hooks/useToastMessage';
 import { useAppDispatch } from '~/store';
+import { setAuthStoreStateAction } from '~/store/auth/authSlice';
 import { appFontFamily } from '~/styles/fonts';
 
 const configureGoogleSignIn = () => {
   GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-    webClientId: '',
-    iosClientId: '',
+    webClientId:
+      '819087675772-52ieuiko1tkc8enci3405q6s1kaufn4n.apps.googleusercontent.com', //`autoDetect`,
   });
 };
 
@@ -71,17 +72,38 @@ export default function SocialAuthButton(props: Props) {
 
       const { idToken } = await GoogleSignin.signIn();
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      const res = await auth().signInWithCredential(googleCredential);
+      const { user, additionalUserInfo } = await auth().signInWithCredential(
+        googleCredential,
+      );
 
-      if (idToken) {
-        //
+      if (user.uid) {
+        appDispatch(
+          setAuthStoreStateAction({
+            user: {
+              displayName: user.displayName,
+              multiFactor: user.multiFactor!,
+              isAnonymous: user.isAnonymous,
+              emailVerified: user.emailVerified,
+              providerData: user.providerData,
+              uid: user.uid,
+              email: user.email!,
+              phoneNumber: user.phoneNumber,
+              photoURL: user.photoURL,
+              metadata: user.metadata,
+              providerId: user.providerId,
+            },
+            additionalUserInfo,
+            isLoggedIn: true,
+          }),
+        );
       } else {
         return toastMessage.error({
-          title: 'Supabase sign in error',
+          title: 'Sign in error',
           message: 'Unable to sign in with the provided Google mail',
         });
       }
     } catch (error: any) {
+      console.log('\n\nonContinueWithGoogle error', error);
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         return toastMessage.error({
           title: 'Google sign in error',

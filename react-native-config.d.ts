@@ -10,6 +10,12 @@ declare module 'react-native-config' {
     RAPID_API_HOSTNAME?: string;
     NewsAPI_BASE_URL?: string;
     BASE_URL?: string;
+    LendsqrFpNews_IOS_APPCENTER_API_TOKEN?: string;
+    LendsqrFpNews_IOS_APPCENTER_CODEPUSH_DEPLOYMENT_STAGING_KEY?: string;
+    LendsqrFpNews_IOS_APPCENTER_CODEPUSH_DEPLOYMENT_PRODUCTION_KEY?: string;
+    LendsqrFpNews_ANDROID_APPCENTER_CODEPUSH_DEPLOYMENT_STAGING_KEY?: string;
+    LendsqrFpNews_ANDROID_APPCENTER_CODEPUSH_DEPLOYMENT_PRODUCTION_KEY?: string;
+    LendsqrFpNews_ANDROID_APPCENTER_APP_SECRET?: string;
   }
 
   export const Config: NativeConfig;

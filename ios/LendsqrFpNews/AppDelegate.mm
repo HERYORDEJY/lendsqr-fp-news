@@ -23,8 +23,15 @@
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+// {
+//   return [self bundleURL];
+// }
 {
-  return [self bundleURL];
+  #if DEBUG
+    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+  #else
+    return [CodePush bundleURL];
+  #endif
 }
 
 - (NSURL *)bundleURL

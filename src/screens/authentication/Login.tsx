@@ -85,7 +85,7 @@ export default function Login() {
           }
         });
     } catch (error: any) {
-      console.log('\n\nerror.message', error);
+      // console.log('\n\nerror.message', error);
       toastMessage.error({
         message: error.message,
       });
@@ -175,7 +175,7 @@ export default function Login() {
               </View>
               <View style={styles.socialAuthWrapper}>
                 <SocialAuthButton type="google" />
-                <SocialAuthButton type="apple" />
+                {/* <SocialAuthButton type="apple" /> */}
               </View>
             </>
           </View>
@@ -245,8 +245,6 @@ const styles = StyleSheet.create({
     marginBottom: 7,
   },
   pageHeaderSubtitle: {
-    // fontSize: 40,
-    // fontFamily:  'montserratBold',
     textAlign: 'center',
   },
   dontButton: {

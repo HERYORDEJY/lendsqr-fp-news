@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">LendsqrFpNews</string>
-    <string moduleConfig="true" name="CodePushDeploymentKey">a70c62ef-d886-45cd-8594-4d85c93ba1c8</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">Zc2XTuNNhm-yDJyYFtXML63BKFfDLY83Pd0SS</string>
+    <string name="CodePushPublicKey">-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA27RhMxAN6gYwnkcko8Wn
+pNWPRgNhzJOhmsyoBveiH/VhP6ZIm2Ngkce97jLAur3FWnc/eenEITGLNzEhcy4K
++FJBtfVoLNVphXPbYRuEOXkdlmLv0JYWGFr63OgvqS+RX/wX8jDzuUNPCZ62bfvl
+3n1sOMJ376LCM+ofQGkiMM589/+hpdz69ytaUTAcAZK4wHWok2adMRnLH+QmICzU
+L1W/OpO/j58MGunnB/RLTgUZj6Uz/WA5zoCll5ge89t87RYHPWX1w1fM9rsSE8h/
+v4zbDvgI0Q0jPcIE10K3xYeboAvDL9TXr3jYjesI7u6lpZLDqMJV2E9ZURiu6pfN
+cQIDAQAB
+-----END PUBLIC KEY-----</string>
 </resources>

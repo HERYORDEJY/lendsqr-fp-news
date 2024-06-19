@@ -12,7 +12,20 @@
           "package_name": "dev.heryordejy.lendsqrfpnews"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "819087675772-emjlgfoqq6a3q59nf1l9gahuu3ph52fu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dev.heryordejy.lendsqrfpnews",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "819087675772-52ieuiko1tkc8enci3405q6s1kaufn4n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCI4SeODA-MYN35Y93K16XJF36lS-3dIrQ"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "819087675772-52ieuiko1tkc8enci3405q6s1kaufn4n.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "819087675772-j44p691bmingtvrhpj5evqbj2etv4s10.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "dev.heryordejy.lendsqrfpnews"
+              }
+            }
+          ]
         }
       }
     }
