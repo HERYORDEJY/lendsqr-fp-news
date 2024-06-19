@@ -15,6 +15,7 @@ import { NewsStackParamList } from '~/navigations/types';
 import { NewsArticleDataType } from '~/store/news/types';
 import { appThemeColors } from '~/styles/colors';
 import { appFontFamily } from '~/styles/fonts';
+import { verticalScale } from '~/utils/ui-scaling';
 import CustomFastImage from '../general/CustomFastImage';
 import ClockIcon from '../svgs/ClockIcon';
 
@@ -48,7 +49,8 @@ const Component = ({ news, ...props }: Props) => {
         style={[
           styles.imageWrapper,
           {
-            height: windowDimensions.width * 0.4,
+            // height: windowDimensions.width * 0.4,
+            height: verticalScale(150),
           },
         ]}
       >
@@ -79,12 +81,12 @@ const NewsTopHeadlineItem = Component; // React.memo(Component);
 export default NewsTopHeadlineItem;
 
 const styles = StyleSheet.create({
-  container: { marginRight: 20, height: 250 },
+  container: { marginRight: 20 },
   imageWrapper: { width: '100%', overflow: 'hidden' },
   image: { aspectRatio: 1 },
   descWrapper: {
     padding: 10,
-    paddingVertical: 5,
+    paddingVertical: 10,
     rowGap: 5,
   },
   title: {

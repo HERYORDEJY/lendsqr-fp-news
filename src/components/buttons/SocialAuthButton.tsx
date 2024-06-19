@@ -34,7 +34,7 @@ interface Props extends TouchableOpacityProps {
   onSignInGoogle?: (response: {
     additionalUserInfo: FirebaseAuthTypes.AdditionalUserInfo | undefined;
     user: FirebaseAuthTypes.User;
-  }) => void;
+  }) => Promise<void>;
 }
 
 export default function SocialAuthButton(props: Props) {
@@ -80,7 +80,7 @@ export default function SocialAuthButton(props: Props) {
       );
 
       if (user.uid) {
-        props.onSignInGoogle?.({ user, additionalUserInfo });
+        await props.onSignInGoogle?.({ user, additionalUserInfo });
       } else {
         return toastMessage.error({
           title: 'Sign in error',
